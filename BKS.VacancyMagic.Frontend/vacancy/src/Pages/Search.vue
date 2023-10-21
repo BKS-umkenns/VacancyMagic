@@ -22,7 +22,13 @@ export default {
     return {
       actualStep:0,
       steps: [
-        { label: 'Запрос', icon: 'list' },
+        {
+          label: 'Запрос',
+          icon: 'list',
+          beforeLeave: (step) => {
+            step.hasError = true
+          }
+        },
         { label: 'Фильтры', icon: 'check_box' },
         { label: 'Вакансии', icon: 'payments' },
         { label: 'Отклики', icon: 'done_all' },
