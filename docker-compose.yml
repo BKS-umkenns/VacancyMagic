@@ -5,7 +5,7 @@ networks:
     driver: bridge
 
 services:
-  basebackend:
+  bksbackend:
     image: bksbackendcontainer
     build:
       context: .
