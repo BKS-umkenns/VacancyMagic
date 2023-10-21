@@ -54,6 +54,6 @@ export default {
   gap: 0.25rem;
 }
 .textarea {
-  min-width: 400px;
+  min-width: 300px;
 }
 </style>

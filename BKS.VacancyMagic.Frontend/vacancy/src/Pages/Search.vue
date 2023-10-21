@@ -12,7 +12,7 @@
             #[`step-button-${i}`]="{ setStep, isActive, isCompleted }"
         >
             <div
-                @click="setStep(i)"
+                @click="(i>actualStep)?setStep(i):null"
                 class="step-button"
                 :class="{
                   'step-button--active': isActive,
@@ -24,11 +24,9 @@
                 {{ step.label }}
             </div>
         </template>
-
-
         <template #step-content-0>
             <AiPromtStep
-                    ref="aiPromt"
+                ref="aiPromt"
             />
         </template>
         <template #step-content-1>
@@ -76,7 +74,7 @@ export default {
         }
     },
     mounted() {
-        // this.newStart()
+        this.newStart()
     },
     data(){
         return {
@@ -155,6 +153,7 @@ export default {
 .stepper {
   margin-top: 1rem;
   overflow: auto;
+    width: 100%;
 }
 .stepper-container{
     height: 60vh;

@@ -106,7 +106,7 @@ export default {
         clear(state){
             state.actualPromt = '';
             state.actualStep = 0;
-            state.vacancies = [];
+            // state.vacancies = [];
         }
     },
     getters:{

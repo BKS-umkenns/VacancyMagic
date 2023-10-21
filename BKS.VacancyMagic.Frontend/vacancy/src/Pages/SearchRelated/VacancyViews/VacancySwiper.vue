@@ -131,8 +131,11 @@ export default {
 
 <style scoped>
 #swiper {
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
   height: fit-content;
-  width: 80%;
+  width: 100%;
   margin: auto;
 }
 </style>

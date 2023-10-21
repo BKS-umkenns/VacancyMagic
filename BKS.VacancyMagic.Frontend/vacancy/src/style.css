@@ -59,3 +59,8 @@ ol {
   padding-inline-start: 0;
   padding: 0 1rem;
 }
+
+.va-stepper__step-content {
+  display: flex;
+  justify-content: center;
+}

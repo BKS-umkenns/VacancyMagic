@@ -4,7 +4,7 @@
 
 <template>
   <div>
-    Confirm filters
+    Фильтры из запроса
   </div>
 </template>
 

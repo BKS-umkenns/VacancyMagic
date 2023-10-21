@@ -20,7 +20,7 @@
     </div>
     <va-card-content class="content">
       <TagsContainer :tags="vacancy.tags" />
-      <div v-html="vacancy.description">
+      <div v-html="vacancy.description" class="vacancy-description">
       </div>
     </va-card-content>
   </va-card>
@@ -38,10 +38,18 @@ export default {
 </script>
 
 <style scoped>
+.vacancy-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+}
 .card {
   width: 100%;
   border: 2px solid var(--va-background-border);
   border-radius: 8px;
+  max-width: 600px;
 }
 .title {
   display: flex;
