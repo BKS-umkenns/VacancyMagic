@@ -10,7 +10,7 @@ public class Reply
     public string VacancyId { get; set; } = null!;
 
     public long UserId { get; set; }
-    public string ServiceId { get; set; } = null!;
+    public long ServiceId { get; set; }
     public Service Service { get; set; } = null!;
     public User User { get; set; } = null!;
 }
