@@ -1,12 +1,14 @@
-<script setup>
-
-</script>
-
 <template>
   <div>
     Vacancy list step
   </div>
 </template>
+
+<script>
+export default {
+
+}
+</script>
 
 <style scoped>
 

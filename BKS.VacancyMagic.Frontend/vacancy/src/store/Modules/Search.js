@@ -2,7 +2,24 @@ export default {
     namespaced:'Search',
     state: ()=>({
         actualPromt:'',
-        actualStep:0,
+        actualStep:2,
+        vacancies: [
+            {
+                id:1,
+                serviceId:'hh',
+                inServiceId:3432,
+                employer:'Яндекс',
+                title:'Дериктор по логистике курьеров',
+                description: 'Подробное описание ахахаххывахы авыа ыавыва выа ыва ывафавыфпвыаыввф аывфсыв',
+                tags: [
+                    {
+                        id:1,
+                        name:'Зарплата',
+                        value:'1000 р'
+                    }
+                ]
+            }
+        ]
     }),
     actions:{
         newStart({commit}){
@@ -17,6 +34,7 @@ export default {
         clear(state){
             state.actualPromt = '';
             state.actualStep = 0;
+            state.vacancies = [];
         }
     },
     getters:{

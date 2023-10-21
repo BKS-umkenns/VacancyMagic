@@ -3,7 +3,7 @@ import NavBar from "../components/NavBar.vue";
 import AiPromtStep from "./SearchRelated/AiPromtStep.vue";
 import ConfirmFilters from "./SearchRelated/ConfirmFilters.vue";
 import VacancyList from "./SearchRelated/VacancyList.vue";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default {
   components: {
@@ -21,7 +21,6 @@ export default {
   },
   data(){
     return {
-      actualStep:0,
       steps: [
         {
           label: 'Запрос',
@@ -35,10 +34,24 @@ export default {
   },
   computed: {
     ...mapGetters('Search',[
-        'isValidPromtText'
-    ])
+        'isValidPromtText',
+        'searchState'
+    ]),
+    actualStep: {
+      get(){
+        return this.searchState.actualStep;
+      },
+      set(value){
+        this.changeState({
+          actualStep:value
+        })
+      }
+    }
   },
   methods: {
+    ...mapMutations('Search',[
+        'changeState'
+    ]),
     isNextBtnAvailable(step){
       if(step.icon === 'list') {
         return !this.isValidPromtText
