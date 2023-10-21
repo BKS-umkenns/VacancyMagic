@@ -185,6 +185,9 @@ export default {
 </script>
 
 <style scoped>
+.logo {
+    cursor: pointer;
+}
 .nav-link-sidebar {
     color: #181818;
 }

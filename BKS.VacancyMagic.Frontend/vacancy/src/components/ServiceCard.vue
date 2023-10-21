@@ -1,16 +1,17 @@
 <template>
   <va-card
     :id="service.id"
+    class="card"
     :style="{ boxShadow: `-10px -10px 2px ${service.color}` }"
   >
     <va-card-content class="content">
-      <div class="title" role="heading">
-        {{service.name}}
         <va-image
           class="service-logo"
           fit="contain"
           :src="service.logoUrl"
         />
+      <div class="title" role="heading">
+        {{service.name}}
       </div>
       <div class="function" v-for="func in service.functions">
         <p :class="func.implemented ? '' : 'soon'">{{ func.name }}</p>
@@ -39,6 +40,9 @@ export default {
 </script>
 
 <style scoped>
+.card {
+    //height: 250px;
+}
 .content {
   display: flex;
   flex-direction: column;
@@ -60,8 +64,8 @@ export default {
   height: 2.5rem;
 }
 .checkedIcon {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1rem;
+  height: 1rem;
 }
 .function {
   display: flex;
