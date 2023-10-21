@@ -67,11 +67,10 @@ export default {
       if (Math.abs(this.offsetX) > this.element.clientWidth * scale) {
 
         const direction = this.offsetX > 0 ? 1 : -1;
-        if (direction < 0) {
-          this.dismiss();
-        } else {
-          // отклик?
+        if (direction > 0) {
+          // reply()
         }
+        this.dismiss(event, direction);
       }
     },
     handleMouseUp (event) {
@@ -91,7 +90,7 @@ export default {
       }
 
     },
-    dismiss (event) {
+    dismiss (event, direction) {
       this.startPoint = null;
 
       let timeout;
@@ -104,8 +103,14 @@ export default {
         document.removeEventListener("mousemove", this.handleMouseMove);
         timeout = 1000;
       }
+
       this.element.style.transition = `transform ${timeout / 1000}s`;
-      this.element.style.transform = `translate(${-window.innerWidth}px`;
+      if (direction > 0) {
+        this.element.style.transform = `translate(${window.innerWidth}px`;
+      } else {
+        this.element.style.transform = `translate(${-window.innerWidth}px`;
+      }
+
 
       setTimeout(() => {
         this.current++;
