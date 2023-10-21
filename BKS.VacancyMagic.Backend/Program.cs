@@ -1,5 +1,6 @@
 using BKS.VacancyMagic.Backend.Common.Configuration;
 using BKS.VacancyMagic.Backend.DAL;
+using BKS.VacancyMagic.Backend.DAL.Models;
 using BKS.VacancyMagic.Backend.Interfaces;
 using BKS.VacancyMagic.Backend.Mapping;
 using BKS.VacancyMagic.Backend.Services;
@@ -24,6 +25,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(VacancyProfie));
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient();
 
@@ -62,6 +65,7 @@ builder.Services.AddScoped<IVacancy, SuperjobService>();
 builder.Services.AddScoped<ISearch, ChadService>();
 
 builder.Services.AddScoped<ChadService>();
+builder.Services.AddScoped<SuperjobService>();
 
 //services.AddValidatorsFromAssemblyContaining<Validator>();
 

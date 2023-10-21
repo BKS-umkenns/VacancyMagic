@@ -11,5 +11,12 @@ public sealed partial class AppDbContext
         {
             entity.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
         });
+
+        builder.Entity<Service>(entity =>
+        {
+            entity.HasData(
+                new Service { Id = 1, Name = "SuperJob" }
+             );
+        });
     }
 }

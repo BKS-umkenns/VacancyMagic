@@ -10,12 +10,14 @@ namespace BKS.VacancyMagic.Backend.Controllers;
 [Route("api/[controller]")]
 public class AuthController : Controller
 {
+    private readonly IHttpContextAccessor _contextAccessor;
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
-    public AuthController(AppDbContext dbContext, IMapper mapper)
+    public AuthController(AppDbContext dbContext, IMapper mapper, IHttpContextAccessor contextAccessor)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _contextAccessor = contextAccessor;
     }
 
     [HttpPost("register")]
@@ -58,6 +60,8 @@ public class AuthController : Controller
             {
                 var user = await _dbContext.Users.SingleAsync(user => user.Name == req.Login, ct);
                 if (user.PasswordHash != req.Password) return BadRequest("Login or password incorrect");
+                //_contextAccessor.HttpContext.User.Identities.
+                
 
                 return Ok(user.Name);
             }

@@ -7,4 +7,7 @@ public class AuthRequestDTO
     public string? Code { get; set; }
     public string? GrantType { get; set; }
     public Uri? RedirectUri { get; set; }
+
+    public string? Login { get; set; }
+    public string? Password { get; set; }
 }
