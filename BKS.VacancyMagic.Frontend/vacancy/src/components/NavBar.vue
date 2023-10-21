@@ -5,7 +5,7 @@
   >
     <template #left>
       <va-navbar-item class="logo navbar__item">
-        Not Tomorrow {{isMobile}}
+        Not Tomorrow
       </va-navbar-item>
     </template>
     <template #right>
