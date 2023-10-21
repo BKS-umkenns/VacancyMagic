@@ -3,6 +3,7 @@ import NavBar from "../components/NavBar.vue";
 import AiPromtStep from "./SearchRelated/AiPromtStep.vue";
 import ConfirmFilters from "./SearchRelated/ConfirmFilters.vue";
 import VacancyList from "./SearchRelated/VacancyList.vue";
+import {mapGetters} from "vuex";
 
 export default {
   components: {
@@ -14,7 +15,6 @@ export default {
   watch: {
     actualStep:function (newValue){
       if(newValue === 3){
-        
         this.$router.push('/reply');
       }
     }
@@ -26,9 +26,6 @@ export default {
         {
           label: 'Запрос',
           icon: 'list',
-          beforeLeave: (step) => {
-            step.hasError = true
-          }
         },
         { label: 'Фильтры', icon: 'check_box' },
         { label: 'Вакансии', icon: 'payments' },
@@ -36,13 +33,25 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapGetters('Search',[
+        'isValidPromtText'
+    ])
+  },
   methods: {
+    isNextBtnAvailable(step){
+      if(step.icon === 'list') {
+        return !this.isValidPromtText
+      }
+      return true;
+    },
     getNextButtonText(step){
       if(step.icon === 'list') return 'Найти'
       return 'Дальше'
     },
     handleNextButton(step,nextStepFunc){
       if(step.icon === 'list') {
+        console.log(this.$refs.aiPromt.validatePromt())
         //call get specifications for search on external services (next step)
       }
       nextStepFunc();
@@ -84,6 +93,7 @@ export default {
       </va-button>
       <va-button
         @click="handleNextButton(step,nextStep)"
+        :disabled="isNextBtnAvailable(step)"
       >
         {{getNextButtonText(step)}}
       </va-button>

@@ -5,11 +5,15 @@
     </div>
     <div>
       <va-textarea
-          class="textarea"
-        v-model="inputed"
-        autosize
+        class="textarea"
+        ref="promt"
+        v-model="inputted"
+        :max-length="125"
         :max-rows="5"
         placeholder="Я хочу много денег и мало работать..."
+        :rules="[
+          (v) => v && v.length < 125 || 'Лимит на 125 символов',
+        ]"
       />
     </div>
   </div>
@@ -17,11 +21,28 @@
 
 <script>
 
+import {mapGetters, mapMutations} from "vuex";
+
 export default {
-  data(){
-    return {
-      inputed:''
+  computed: {
+    ...mapGetters('Search',[
+        'searchState'
+    ]),
+    inputted: {
+      get(){
+        return this.searchState.actualPromt;
+      },
+      set(newValue){
+        this.changeState({
+          actualPromt: newValue
+        })
+      }
     }
+  },
+  methods: {
+    ...mapMutations('Search',[
+        'changeState'
+    ]),
   }
 }
 </script>

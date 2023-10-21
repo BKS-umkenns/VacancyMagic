@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import User from "./Modules/User";
+import Search from "./Modules/Search";
 
 export default createStore({
   state: {
@@ -12,6 +13,7 @@ export default createStore({
   actions: {
   },
   modules: {
-    User
+    User,
+    Search
   }
 })
