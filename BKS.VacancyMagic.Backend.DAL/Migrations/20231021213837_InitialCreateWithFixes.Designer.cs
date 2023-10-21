@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BKS.VacancyMagic.Backend.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231021163715_AddDataForServices")]
-    partial class AddDataForServices
+    [Migration("20231021213837_InitialCreateWithFixes")]
+    partial class InitialCreateWithFixes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,11 +38,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ServiceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("ServiceId1")
+                    b.Property<long>("ServiceId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("UserId")
@@ -54,7 +50,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServiceId1");
+                    b.HasIndex("ServiceId");
 
                     b.HasIndex("UserId");
 
@@ -77,9 +73,6 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                     b.Property<long>("ReplyId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ReplyStatusId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("StatusId")
                         .HasColumnType("bigint");
 
@@ -87,7 +80,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
 
                     b.HasIndex("ReplyId");
 
-                    b.HasIndex("ReplyStatusId");
+                    b.HasIndex("StatusId");
 
                     b.ToTable("ReplyHistories");
                 });
@@ -261,16 +254,12 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ServiceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("ServiceId1")
+                    b.Property<long>("ServiceId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServiceId1");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("Tags");
                 });
@@ -313,7 +302,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                 {
                     b.HasOne("BKS.VacancyMagic.Backend.DAL.Models.Service", "Service")
                         .WithMany()
-                        .HasForeignKey("ServiceId1")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -338,7 +327,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
 
                     b.HasOne("BKS.VacancyMagic.Backend.DAL.Models.ReplyStatus", "ReplyStatus")
                         .WithMany()
-                        .HasForeignKey("ReplyStatusId")
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -438,7 +427,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                 {
                     b.HasOne("BKS.VacancyMagic.Backend.DAL.Models.Service", "Service")
                         .WithMany()
-                        .HasForeignKey("ServiceId1")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

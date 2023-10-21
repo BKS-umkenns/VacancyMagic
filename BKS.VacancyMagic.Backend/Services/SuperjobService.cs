@@ -49,7 +49,7 @@ public class SuperjobService : IVacancy
         };
     }
 
-    public async Task<List<VacancyRecordDTO?>> GetDataAsync(SuperJobVacancyPrompt prompt, CancellationToken ct)
+    public async Task<List<VacancyRecordDTO?>> GetDataAsync<TPrompt>(TPrompt prompt, CancellationToken ct) where TPrompt : class
     {
         var vacanciesUrl = $"{BaseUrl}/vancies/";
 

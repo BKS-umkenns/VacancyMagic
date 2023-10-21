@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BKS.VacancyMagic.Backend.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateWithFixes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -70,15 +70,14 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ServiceId = table.Column<string>(type: "text", nullable: false),
-                    ServiceId1 = table.Column<long>(type: "bigint", nullable: false)
+                    ServiceId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tags_Services_ServiceId1",
-                        column: x => x.ServiceId1,
+                        name: "FK_Tags_Services_ServiceId",
+                        column: x => x.ServiceId,
                         principalTable: "Services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -93,15 +92,14 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", rowVersion: true, nullable: false),
                     VacancyId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    ServiceId = table.Column<string>(type: "text", nullable: false),
-                    ServiceId1 = table.Column<long>(type: "bigint", nullable: false)
+                    ServiceId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Replies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Replies_Services_ServiceId1",
-                        column: x => x.ServiceId1,
+                        name: "FK_Replies_Services_ServiceId",
+                        column: x => x.ServiceId,
                         principalTable: "Services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -169,8 +167,7 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     StatusId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", rowVersion: true, nullable: false),
-                    ReplyId = table.Column<long>(type: "bigint", nullable: false),
-                    ReplyStatusId = table.Column<long>(type: "bigint", nullable: false)
+                    ReplyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -182,8 +179,8 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ReplyHistories_ReplyStatuses_ReplyStatusId",
-                        column: x => x.ReplyStatusId,
+                        name: "FK_ReplyHistories_ReplyStatuses_StatusId",
+                        column: x => x.StatusId,
                         principalTable: "ReplyStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -250,10 +247,15 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Services",
+                columns: new[] { "Id", "Name" },
+                values: new object[] { 1L, "SuperJob" });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Replies_ServiceId1",
+                name: "IX_Replies_ServiceId",
                 table: "Replies",
-                column: "ServiceId1");
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Replies_UserId",
@@ -266,9 +268,9 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                 column: "ReplyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReplyHistories_ReplyStatusId",
+                name: "IX_ReplyHistories_StatusId",
                 table: "ReplyHistories",
-                column: "ReplyStatusId");
+                column: "StatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReplyStatuses_ServiceId",
@@ -316,9 +318,9 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_ServiceId1",
+                name: "IX_Tags_ServiceId",
                 table: "Tags",
-                column: "ServiceId1");
+                column: "ServiceId");
         }
 
         /// <inheritdoc />
