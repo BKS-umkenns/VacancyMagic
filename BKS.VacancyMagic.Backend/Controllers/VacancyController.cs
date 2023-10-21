@@ -3,7 +3,9 @@ using BKS.VacancyMagic.Backend.Interfaces;
 using BKS.VacancyMagic.Backend.Models.Auth;
 using BKS.VacancyMagic.Backend.Models.Search;
 using BKS.VacancyMagic.Backend.Models.Vacancy;
+using BKS.VacancyMagic.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BKS.VacancyMagic.Backend.Controllers;
 
@@ -14,12 +16,15 @@ public class VacancyController : Controller
     private readonly ISearch _searchService;
     private readonly AppDbContext _dbContext;
     private readonly ILogger _logger;
-    public VacancyController(IVacancy vacancyService, ISearch searchService, AppDbContext dbContext, ILogger<VacancyController> logger)
+    private readonly IHttpContextAccessor _httpContextAccesor;
+    public VacancyController(IVacancy vacancyService, ISearch searchService, AppDbContext dbContext, ILogger<VacancyController> logger,
+        IHttpContextAccessor httpContextAccessor)
     {
         _vacancyService = vacancyService;
         _searchService = searchService;
         _dbContext = dbContext;
         _logger = logger;
+        _httpContextAccesor = httpContextAccessor;
     }
 
     /// <summary>
@@ -39,18 +44,20 @@ public class VacancyController : Controller
     }
 
     [HttpGet("auth")]
-    public async Task<ActionResult<AuthResultDTO>> Authorization(AuthRequestDTO req, CancellationToken ct)
+    public async Task<ActionResult<AuthResultDTO>> AuthorizationInService(AuthRequestDTO req, CancellationToken ct)
     {
         var result = await _vacancyService.AuthorizationAsync(req, ct);
 
         try
         {
+            var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccesor.HttpContext!.User.Identity!.Name, ct);
+            var service = await _dbContext.Services.SingleAsync(service => service.Name == _vacancyService.Title, ct);
             await _dbContext.ServiceAuthorizations.AddAsync(new DAL.Models.ServiceAuthorization
             {
                 AccessToken = result!.AccessToken!,
                 RefreshToken = result.RefreshToken,
-                ServiceId = 1,
-                UserId = 1
+                ServiceId = service.Id,
+                UserId = user.Id
             }, ct);
             await _dbContext.SaveChangesAsync();
         }
@@ -68,7 +75,7 @@ public class VacancyController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<VacancyRecordDTO>?>> GetData(string prompt, CancellationToken ct)
+    public async Task<ActionResult<List<VacancyRecordDTO>?>> GetData(SuperJobVacancyPrompt prompt, CancellationToken ct)
     {
         var result = await _vacancyService.GetDataAsync(prompt, ct);
 

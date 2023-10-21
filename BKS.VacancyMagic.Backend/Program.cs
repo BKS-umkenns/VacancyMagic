@@ -4,6 +4,7 @@ using BKS.VacancyMagic.Backend.DAL.Models;
 using BKS.VacancyMagic.Backend.Interfaces;
 using BKS.VacancyMagic.Backend.Mapping;
 using BKS.VacancyMagic.Backend.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -29,8 +30,6 @@ builder.Services.AddAutoMapper(typeof(VacancyProfie));
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient();
-
-builder.Services.AddControllersWithViews();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -75,11 +74,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     //options.UseOpenIddict();
 });
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-//});
-//builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = new PathString("/Auth/login");
+    });
+
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -91,7 +92,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-//app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 //Require for use controllers
