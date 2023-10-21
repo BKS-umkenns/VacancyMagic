@@ -1,15 +1,61 @@
 <template>
-  <div>
-    Vacancy list step
+  <div class="vacancy-list-container">
+    <div class="description-text">
+      Тут представленны вакансии, ага
+    </div>
+
+    <div class="mode-switcher">
+      <va-button-toggle
+          v-model="selectedViewMode"
+          preset="secondary"
+          border-color="primary"
+          :options="modes"
+      />
+    </div>
+
+    <div class="presentation-container">
+      <VacancysTable
+        v-if="selectedViewMode === 0"
+      />
+      <div v-else>
+        Tinder
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
+import VacancysTable from "./VacancyViews/VacancysTable.vue";
 
+export default {
+  components: {VacancysTable},
+  data(){
+    return {
+      selectedViewMode:0,
+      modes:[
+        { label: "Таблица", value: 0 },
+        { label: "Tinder?", value: 1 },
+      ]
+    }
+  }
 }
 </script>
 
 <style scoped>
+.vacancy-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
+.presentation-container {
+  display: flex;
+  flex-grow: 1;
+}
+.mode-switcher {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  flex-grow: 1;
+}
 </style>

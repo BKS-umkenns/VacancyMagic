@@ -19,6 +19,9 @@ export default {
       }
     }
   },
+  mounted() {
+    // this.newStart()
+  },
   data(){
     return {
       steps: [
@@ -52,9 +55,12 @@ export default {
     ...mapMutations('Search',[
         'changeState'
     ]),
+    ...mapActions('Search',[
+        'newStart'
+    ]),
     isNextBtnAvailable(step){
       if(step.icon === 'list') {
-        return !this.isValidPromtText
+        return this.isValidPromtText
       }
       return true;
     },
@@ -64,7 +70,7 @@ export default {
     },
     handleNextButton(step,nextStepFunc){
       if(step.icon === 'list') {
-        console.log(this.$refs.aiPromt.validatePromt())
+        // console.log(this.$refs.aiPromt.validatePromt())
         //call get specifications for search on external services (next step)
       }
       nextStepFunc();
@@ -79,7 +85,28 @@ export default {
       v-model="actualStep"
       :steps="steps"
       controlsHidden
+      class="stepper"
   >
+    <template
+        v-for="(step, i) in steps"
+        :key="step.label"
+        #[`step-button-${i}`]="{ setStep, isActive, isCompleted }"
+    >
+      <div
+          class="step-button"
+          :class="{
+            'step-button--active': isActive,
+            'step-button--completed': isCompleted,
+          }"
+
+      >
+<!--        @click="setStep(i)"-->
+        <va-icon :name="step.icon" />
+        {{ step.label }}
+      </div>
+    </template>
+
+
     <template #step-content-0>
       <AiPromtStep
         ref="aiPromt"
@@ -98,15 +125,15 @@ export default {
     </template>
 
     <template #controls="{ nextStep, prevStep, step }">
-      <va-button
-        @click="prevStep()"
-        :disabled="step.icon === 'list'"
-      >
-        Назад
-      </va-button>
+<!--      <va-button-->
+<!--        @click="prevStep()"-->
+<!--        :disabled="step.icon === 'list'"-->
+<!--      >-->
+<!--        Назад-->
+<!--      </va-button>-->
       <va-button
         @click="handleNextButton(step,nextStep)"
-        :disabled="isNextBtnAvailable(step)"
+        :disabled="!isNextBtnAvailable(step)"
       >
         {{getNextButtonText(step)}}
       </va-button>
@@ -115,5 +142,23 @@ export default {
 </template>
 
 <style scoped>
-
+.step-button--active {
+  color: var(--va-primary);
+}
+.step-button {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  padding: 1rem;
+  border-radius: .25rem;
+  cursor: pointer;
+  transition: .5s ease-in color;
+}
+.step-button:hover {
+  color: var(--va-primary);
+}
+.step-button--completed {
+  color: var(--va-success)
+}
+.stepper {
+  margin-top: 1rem;
+}
 </style>

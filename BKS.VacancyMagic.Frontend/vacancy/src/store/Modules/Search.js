@@ -41,6 +41,9 @@ export default {
         isValidPromtText(state){
             return state.actualPromt.length < 125;
         },
+        vacancies(state){
+            return state.vacancies
+        },
         searchState(state){
             return state;
         }

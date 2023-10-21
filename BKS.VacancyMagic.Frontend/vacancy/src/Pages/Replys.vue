@@ -46,7 +46,7 @@ export default {
         },
         {
           id: 'sj',
-          logo:'/SuperJobLogo.png'
+          logo:'/superjobLogo.png'
         }
       ],
       columns: [
@@ -115,6 +115,7 @@ export default {
       >
         <template #cell(serviceId)="{ value }">
           <va-image
+              class="service-logo"
             fit="contain"
             :src="getServiceInfo(value).logo"
           />
@@ -150,6 +151,10 @@ export default {
 </template>
 
 <style scoped>
+.service-logo {
+  max-width: 70px;
+  max-height: 70px;
+}
 .vacancy_link {
   text-decoration: underline;
   cursor: pointer;
