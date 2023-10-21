@@ -14,7 +14,7 @@ export default {
           serviceId:'hh',
           employer:'Яндекс',
           vacancyName:'Главный тута',
-          description:'Ответсвенная должность, с которой вы раскроете свои таланты и тд и тп',
+          description:'Ответсвенная должность...',
           status: 1
         },
         {

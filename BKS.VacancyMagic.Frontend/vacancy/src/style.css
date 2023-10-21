@@ -37,6 +37,8 @@
 
 fieldset {
   border: unset;
+  margin: unset;
+  padding: unset;
 }
 
 body {

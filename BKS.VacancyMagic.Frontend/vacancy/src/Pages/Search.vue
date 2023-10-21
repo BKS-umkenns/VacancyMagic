@@ -28,6 +28,18 @@ export default {
         { label: 'Отклики', icon: 'done_all' },
       ]
     }
+  },
+  methods: {
+    getNextButtonText(step){
+      if(step.icon === 'list') return 'Найти'
+      return 'Дальше'
+    },
+    handleNextButton(step,nextStepFunc){
+      if(step.icon === 'list') {
+        //call get specifications for search on external services (next step)
+      }
+      nextStepFunc();
+    }
   }
 }
 </script>
@@ -57,8 +69,17 @@ export default {
     </template>
 
     <template #controls="{ nextStep, prevStep, step }">
-      <va-button @click="prevStep()" :disabled="step.icon === 'list'">Назад</va-button>
-      <va-button @click="nextStep()">Дальше</va-button>
+      <va-button
+        @click="prevStep()"
+        :disabled="step.icon === 'list'"
+      >
+        Назад
+      </va-button>
+      <va-button
+        @click="handleNextButton(step,nextStep)"
+      >
+        {{getNextButtonText(step)}}
+      </va-button>
     </template>
   </va-stepper>
 </template>
