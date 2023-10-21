@@ -10,4 +10,6 @@ public class SearchValue
     public long ServiceId { get; set; }
 
     public User User { get; set; } = null!;
+    public Reply Reply { get; set; } = null!;
+    public Service Service { get; set; } = null!;
 }

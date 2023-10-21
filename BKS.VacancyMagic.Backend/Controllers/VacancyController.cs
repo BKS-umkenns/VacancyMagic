@@ -13,6 +13,7 @@ public class VacancyController : Controller
         _vacancyService = vacancyService;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<VacancyRecordDTO>?>> GetData(string prompt)
     {
         var result = await _vacancyService.GetDataAsync(prompt);

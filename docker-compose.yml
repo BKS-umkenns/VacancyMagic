@@ -6,30 +6,29 @@ networks:
 
 services:
   basebackend:
-    image: bksbackend
+    image: bksbackendcontainer
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - 5041:80
-      - 7196:443 
     depends_on:
-      - "basedb"
+      - "bksdb"
     networks:
       - dev
 
-  basedb:
+  bksdb:
     image: postgres:latest
     restart: always
     volumes:
       - db_volume:/var/lib/postgresql/data/
-    container_name: basedb
+    container_name: bksdb
     environment:
       - POSTGRES_USER=baseuser
       - POSTGRES_PASSWORD=baseuser123
-      - POSTGRES_DB=basedb
+      - POSTGRES_DB=bksdb
     ports:
-      - 5433:5432
+      - 5432:5432
     networks:
       - dev
 

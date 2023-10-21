@@ -8,22 +8,22 @@ public class SuperjobService : IVacancy
 {
     public string Title { get; set; } = "Superjob";
 
-    public Task<ReplyStatusDTO> Authorization(AuthRequestDTO authRequest)
+    public Task<AuthResultDTO> AuthorizationAsync(AuthRequestDTO authRequest)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<VacancyRecordDTO?>> GetData(string? prompt)
+    public Task<List<VacancyRecordDTO?>> GetDataAsync(string? prompt)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ReplyStatusDTO> GetReplyStatus(ServiceReplyDTO serviceReply)
+    public Task<ReplyStatusDTO> GetReplyStatusAsync(ServiceReplyDTO serviceReply)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ReplyDTO> Reply(VacancyRecordDTO record)
+    public Task<ReplyDTO> ReplyAsync(VacancyRecordDTO record)
     {
         throw new NotImplementedException();
     }

@@ -6,4 +6,5 @@ public class Tag
     public string Name { get; set; } = null!;
 
     public string ServiceId { get; set; } = null!;
+    public Service Service { get; set; } = null!;
 }
