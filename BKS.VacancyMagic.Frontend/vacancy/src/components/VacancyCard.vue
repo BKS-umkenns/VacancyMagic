@@ -3,6 +3,7 @@
     square
     outlined
     :id="vacancy.id"
+    class="card"
   >
     <va-card-title>{{vacancy.title}}</va-card-title>
     <va-card-content>
@@ -20,5 +21,8 @@ export default {
 </script>
 
 <style scoped>
-
+.card {
+  height: 50vh;
+  width: 80%;
+}
 </style>

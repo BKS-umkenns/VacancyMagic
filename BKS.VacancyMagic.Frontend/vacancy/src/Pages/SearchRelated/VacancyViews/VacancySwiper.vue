@@ -1,7 +1,7 @@
 <template>
   <div id="swiper">
     <div v-if="this.current === vacancies.length">Все вакансии просмотрены</div>
-    <VacancyCard v-else :vacancy="vacancies[current]" @:mousedown="onMouseDown" />
+    <VacancyCard v-else :vacancy="vacancies[current]" @:mousedown="onMouseDown" @:touchstart="onMouseDown"/>
   </div>
 </template>
 
@@ -29,15 +29,22 @@ export default {
   },
   mounted() {
     this.element = document.getElementById(this.vacancies[this.current].id);
-
   },
   methods: {
     onMouseDown (event) {
-      const {clientX, clientY} = event;
-      this.startPoint = {x: clientX, y: clientY};
+      let clientX;
+      if (event instanceof TouchEvent) {
+        clientX = event.touches[0].clientX;
 
-      document.addEventListener("mousemove", this.handleMouseMove);
-      document.addEventListener("mouseup", this.handleMouseUp);
+        document.addEventListener("touchmove", this.handleMouseMove);
+        document.addEventListener("touchend", this.handleMouseUp);
+      } else {
+        clientX = event.clientX;
+
+        document.addEventListener("mousemove", this.handleMouseMove);
+        document.addEventListener("mouseup", this.handleMouseUp);
+      }
+      this.startPoint = {x: clientX};
 
       this.element.style.transition = "";
       this.element.addEventListener("dragstart", event => {
@@ -46,14 +53,19 @@ export default {
     },
     handleMouseMove (event) {
       if (!this.startPoint) return;
-
-      const {clientX, clientY} = event;
+      let clientX;
+      let scale;
+      if (event instanceof TouchEvent) {
+        clientX = event.touches[0].clientX;
+        scale = 0.3;
+      } else {
+        clientX = event.clientX;
+        scale = 0.7;
+      }
       this.offsetX = clientX - this.startPoint.x;
-      this.offsetY = clientY - this.startPoint.y;
-      // this.element = document.getElementById(this.vacancies[this.current].id);
-      this.element.style.transform = `translate(${this.offsetX}px, ${this.offsetY}px`;
+      this.element.style.transform = `translate(${this.offsetX}px`;
+      if (Math.abs(this.offsetX) > this.element.clientWidth * scale) {
 
-      if (Math.abs(this.offsetX) > this.element.clientWidth * 0.7) {
         const direction = this.offsetX > 0 ? 1 : -1;
         if (direction < 0) {
           this.dismiss();
@@ -62,22 +74,38 @@ export default {
         }
       }
     },
-    handleMouseUp () {
+    handleMouseUp (event) {
       this.startPoint = null;
-      document.removeEventListener("mousemove", this.handleMouseMove);
-      this.element.style.transition = "transform 0.5s";
-      this.element.style.transform = "";
+
+      let scale;
+      if (event instanceof TouchEvent) {
+        document.removeEventListener("touchmove", this.handleMouseMove);
+        scale = 0.3;
+      } else {
+        document.removeEventListener("mousemove", this.handleMouseMove);
+        scale = 0.7;
+      }
+      if (Math.abs(this.offsetX) <= this.element.clientWidth * scale) {
+        this.element.style.transition = "transform 0.5s";
+        this.element.style.transform = "";
+      }
+
     },
-    dismiss () {
+    dismiss (event) {
       this.startPoint = null;
-      document.removeEventListener("mouseup", this.handleMouseUp);
-      document.removeEventListener("mousemove", this.handleMouseMove);
 
-      this.element.style.transition = "transform 1s";
-      this.element.style.transform = `translate(${-window.innerWidth}px, ${this.offsetY}px`;
-
-      // document.addEventListener("mousemove", this.handleMouseMove);
-      // document.addEventListener("mouseup", this.handleMouseUp);
+      let timeout;
+      if (event instanceof TouchEvent) {
+        document.removeEventListener("touchend", this.handleMouseUp);
+        document.removeEventListener("touchmove", this.handleMouseMove);
+        timeout = 1000;
+      } else {
+        document.removeEventListener("mouseup", this.handleMouseUp);
+        document.removeEventListener("mousemove", this.handleMouseMove);
+        timeout = 1000;
+      }
+      this.element.style.transition = `transform ${timeout / 1000}s`;
+      this.element.style.transform = `translate(${-window.innerWidth}px`;
 
       setTimeout(() => {
         this.current++;
@@ -86,18 +114,11 @@ export default {
         }
 
         this.startPoint = null;
-        // document.removeEventListener("mousemove", this.handleMouseMove);
+
         this.element.style.transition = "";
         this.element.style.transform = "";
 
-        this.element.style.opacity = 1;
-        this.element.style.transition = "opacity 10s";
-
-        // this.element.style.opacity
-
-        // console.log(this.vacancies[this.current].id)
-        // console.log(this.element);
-      }, 1000);
+      }, timeout);
     },
   }
 }
@@ -106,6 +127,7 @@ export default {
 <style scoped>
 #swiper {
   height: 50vh;
-  //border: 1px solid black;
+  width: 80%;
+  margin: auto;
 }
 </style>
