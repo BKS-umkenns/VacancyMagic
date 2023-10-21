@@ -44,15 +44,7 @@
 
       <template #body>
         <div class="full-description">
-          <div class="tags-container">
-            <va-chip
-              v-for="tag in vac.tags"
-              :color="tag.color"
-              :key="tag.id"
-            >
-              {{tag.name}}{{tag.value.length!=0?':':''}} {{tag.value}}
-            </va-chip>
-          </div>
+          <TagsContainer :tags="vac.tags" />
           <div v-html="vac.description">
           </div>
 
@@ -64,7 +56,9 @@
 
 <script>
 import {mapGetters} from "vuex";
+import TagsContainer from "../../../components/TagsContainer.vue";
 export default {
+  components: {TagsContainer},
   computed: {
     ...mapGetters('Search',[
         'vacancies'
@@ -72,7 +66,7 @@ export default {
   },
   methods: {
     reply(id){
-      console.log(this.vacancies.find(el=>el.id == id))
+      console.log(this.vacancies.find(el=>el.id === id))
     }
   }
 }
@@ -116,11 +110,5 @@ export default {
   flex-direction: column;
   gap: 0.5rem;
   height: 50vh;
-}
-.tags-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 </style>
