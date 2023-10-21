@@ -17,18 +17,17 @@
       <VacancysTable
         v-if="selectedViewMode === 0"
       />
-      <div v-else>
-        Tinder
-      </div>
+      <VacancySwiper v-else/>
     </div>
   </div>
 </template>
 
 <script>
 import VacancysTable from "./VacancyViews/VacancysTable.vue";
+import VacancySwiper from "./VacancyViews/VacancySwiper.vue";
 
 export default {
-  components: {VacancysTable},
+  components: {VacancySwiper, VacancysTable},
   data(){
     return {
       selectedViewMode:0,
