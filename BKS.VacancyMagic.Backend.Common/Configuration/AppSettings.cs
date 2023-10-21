@@ -2,5 +2,5 @@
 
 public class AppSettings
 {
-
+    public string Prompt { get; set; } = null!;
 }

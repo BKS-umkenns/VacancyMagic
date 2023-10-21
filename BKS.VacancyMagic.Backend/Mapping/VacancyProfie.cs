@@ -1,5 +1,11 @@
-﻿namespace BKS.VacancyMagic.Backend.Mapping;
+﻿using AutoMapper;
 
-public class VacancyProfie
+namespace BKS.VacancyMagic.Backend.Mapping;
+
+public class VacancyProfie : Profile
 {
+    public VacancyProfie()
+    {
+        
+    }
 }
