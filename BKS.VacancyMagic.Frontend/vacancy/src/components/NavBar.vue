@@ -5,7 +5,7 @@
   >
     <template #left>
       <va-navbar-item class="logo navbar__item">
-        Vacancy
+        Not Tomorrow
       </va-navbar-item>
     </template>
     <template #right>
@@ -18,10 +18,26 @@
         </router-link>
       </va-navbar-item>
       <va-navbar-item class="navbar__item">
-        <div class="user-info-block" v-if="true">
+        <router-link
+            to="/search"
+            class="nav-link"
+        >
+          Поиск работы
+        </router-link>
+      </va-navbar-item>
+      <va-navbar-item class="navbar__item">
+        <router-link
+            to="/reply"
+            class="nav-link"
+        >
+          Отклики
+        </router-link>
+      </va-navbar-item>
+      <va-navbar-item class="navbar__item">
+        <div class="user-info-block" v-if="isAuth">
           <va-icon name="person" />
           <div class="flex-row">
-            <div>
+            <div @click="goToCabinet">
               username surname
             </div>
             <va-button
@@ -34,7 +50,9 @@
         <div
             v-else
         >
-          <va-button>
+          <va-button
+            @click="goToAuth"
+          >
             Войти
           </va-button>
         </div>
@@ -44,8 +62,23 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+
 export default {
-  name: "NavBar"
+  name: "NavBar",
+  computed: {
+    ...mapGetters('User',[
+        'isAuth'
+    ])
+  },
+  methods: {
+    goToAuth(){
+      this.$router.push('/auth')
+    },
+    goToCabinet(){
+      this.$router.push('/cabinet')
+    }
+  }
 }
 </script>
 

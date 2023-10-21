@@ -1,19 +1,24 @@
 <script>
-import NavBar from "./components/NavBar.vue";
+import axios from "axios";
+import store from "./store/store";
+
+axios.interceptors.request.use(
+    function(successfulReq) {
+      successfulReq.headers.Authorization = `Bearer ${store.getters["User/getToken"]}`;
+      return successfulReq;
+    },
+    function(error) {
+      return Promise.reject(error);
+    }
+);
 
 export default {
-  components: {
-    NavBar
-  }
 }
 </script>
 
 <template>
   <div class="page">
-    <NavBar/>
-    <div>
-      <router-view />
-    </div>
+    <router-view />
   </div>
 </template>
 

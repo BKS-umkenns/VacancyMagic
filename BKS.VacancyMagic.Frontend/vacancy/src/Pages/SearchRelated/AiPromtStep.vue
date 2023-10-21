@@ -1,12 +1,12 @@
 <template>
   <div>
-    Home page
+    Ai promt
   </div>
 </template>
 
 <script>
+
 export default {
-  name: "Home"
 }
 </script>
 

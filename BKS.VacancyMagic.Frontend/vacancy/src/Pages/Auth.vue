@@ -1,5 +1,13 @@
 <template>
   <div class="auth-page">
+
+    <div 
+      class="logo-container"
+      @click="goToLanding"
+    >
+      Not Tomorrow
+    </div>
+
     <va-form
         class="auth-form-container"
         @submit.prevent="action"
@@ -72,7 +80,7 @@
 export default {
   data(){
     return {
-      isLogin:false,
+      isLogin:true,
       email:'',
       password:'',
       name:'',
@@ -99,6 +107,9 @@ export default {
       console.log(this.$refs.formRef.isValid)
       return this.$refs.formRef.isValid;
     },
+    goToLanding(){
+      this.$router.push('/')
+    }
   }
 }
 </script>
@@ -120,6 +131,13 @@ export default {
   justify-content: center;
   font-size: 0.8rem;
   text-decoration: underline;
+  cursor: pointer;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5rem 0;
   cursor: pointer;
 }
 </style>
