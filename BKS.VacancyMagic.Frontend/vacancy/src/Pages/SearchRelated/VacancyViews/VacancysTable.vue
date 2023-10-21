@@ -1,8 +1,7 @@
 <template>
-  <div>
+  <div class="collapse-container">
     <va-collapse
-        v-model="value"
-        class="min-w-96"
+        class="collapse"
         :header="vac.title"
         solid
         v-for="vac in vacancies"
@@ -10,7 +9,7 @@
       <template #header="{ value, attrs, iconAttrs, text }">
         <div
             v-bind="attrs"
-            class="collapse-header w-full flex border-[var(--va-background-border)] border-2 p-2 bg-[var(--va-background-element)]"
+            class="collapse-header"
         >
           <va-icon
               name="va-arrow-down"
@@ -18,15 +17,45 @@
               v-bind="iconAttrs"
           />
 
-          <div class="ml-2">
+          <div class="flex-grow">
             {{ text }}
           </div>
+
+          <div>
+            от {{vac.employer}}
+          </div>
+          <div>
+            <va-image
+              class="service-logo"
+              fit="contain"
+              :src="vac.serviceLogoUrl"
+            />
+          </div>
+          <div>
+            <va-button
+              @click="reply(vac.id)"
+            >
+              Откликнуться
+            </va-button>
+          </div>
         </div>
+
       </template>
 
       <template #body>
-        <div class="p-2 border-[var(--va-background-border)] border-2 border-t-0">
-          Lorem ipsum dolor sit amet, consectetur adipisci
+        <div class="full-description">
+          <div class="tags-container">
+            <va-chip
+              v-for="tag in vac.tags"
+              :color="tag.color"
+              :key="tag.id"
+            >
+              {{tag.name}}{{tag.value.length!=0?':':''}} {{tag.value}}
+            </va-chip>
+          </div>
+          <div v-html="vac.description">
+          </div>
+
         </div>
       </template>
     </va-collapse>
@@ -35,22 +64,60 @@
 
 <script>
 import {mapGetters} from "vuex";
-
 export default {
   computed: {
     ...mapGetters('Search',[
         'vacancies'
     ]),
+  },
+  methods: {
+    reply(id){
+      console.log(this.vacancies.find(el=>el.id == id))
+    }
   }
 }
 </script>
 
 <style scoped>
+.collapse-container {
+  width: 100%;
+  flex-grow: 1;
+}
+.flex-grow {
+  flex-grow: 1;
+}
+.collapse {
+  min-width: 98%;
+  flex-grow: 1;
+}
 .collapse-header {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   gap: 1rem;
   align-items: center;
   cursor: pointer;
+  border: var(--va-background-border) 2px solid;
+  flex-grow: 1;
+  background-color: var(--va-background-element);
+  padding: 0.5rem;
+}
+.service-logo {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.full-description {
+  padding: 1rem;
+  border: var(--va-background-border) 2px solid;
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tags-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 </style>

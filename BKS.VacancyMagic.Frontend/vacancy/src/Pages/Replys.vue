@@ -115,7 +115,7 @@ export default {
       >
         <template #cell(serviceId)="{ value }">
           <va-image
-              class="service-logo"
+            class="service-logo"
             fit="contain"
             :src="getServiceInfo(value).logo"
           />
