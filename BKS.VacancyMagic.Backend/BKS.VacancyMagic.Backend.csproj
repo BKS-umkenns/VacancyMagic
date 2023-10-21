@@ -27,4 +27,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BKS.VacancyMagic.Backend.Common\BKS.VacancyMagic.Backend.Common.csproj" />
+    <ProjectReference Include="..\BKS.VacancyMagic.Backend.DAL\BKS.VacancyMagic.Backend.DAL.csproj" />
+  </ItemGroup>
+
 </Project>
