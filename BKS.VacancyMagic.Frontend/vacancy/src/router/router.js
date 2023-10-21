@@ -10,7 +10,7 @@ const routes = [
   { path: '/search', component: Search }, // Search page - 4 steps
   { path: '/cabinet', component: Cabinet },  // Cabinet page
   { path: '/reply', component: Replys },  // Replays history page
-  { path: '/auth', component: Auth },// Login/Register Page
+  { path: '/auth', component: Auth }, // Login/Register Page
 
 ]
 

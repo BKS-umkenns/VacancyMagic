@@ -33,7 +33,7 @@
           </div>
           <div>
             <va-button
-              @click="reply(vac.id)"
+              @click.stop="reply(vac.id)"
             >
               Откликнуться
             </va-button>
@@ -82,6 +82,8 @@ export default {
 .collapse-container {
   width: 100%;
   flex-grow: 1;
+    height: 60vh;
+  overflow: auto;
 }
 .flex-grow {
   flex-grow: 1;
@@ -113,6 +115,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  height: 50vh;
 }
 .tags-container {
   display: flex;

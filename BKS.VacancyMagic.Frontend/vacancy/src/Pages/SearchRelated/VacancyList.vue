@@ -1,7 +1,7 @@
 <template>
   <div class="vacancy-list-container">
     <div class="description-text">
-      Тут представленны вакансии, ага
+      Мы подобрали вакансии, согласно вашим критериям
     </div>
 
     <div class="mode-switcher">

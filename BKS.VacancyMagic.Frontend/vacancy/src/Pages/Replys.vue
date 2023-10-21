@@ -46,7 +46,7 @@ export default {
         },
         {
           id: 'sj',
-          logo:'/superjobLogo.png'
+          logo:'/superjob_logo_180.png'
         }
       ],
       columns: [
