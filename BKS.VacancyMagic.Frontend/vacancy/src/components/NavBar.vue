@@ -5,60 +5,134 @@
   >
     <template #left>
       <va-navbar-item class="logo navbar__item">
-        Not Tomorrow
+        Not Tomorrow {{isMobile}}
       </va-navbar-item>
     </template>
     <template #right>
-      <va-navbar-item class="navbar__item">
-        <router-link
-            to="/"
-            class="nav-link"
-        >
-          Главная
-        </router-link>
-      </va-navbar-item>
-      <va-navbar-item class="navbar__item">
-        <router-link
-            to="/search"
-            class="nav-link"
-        >
-          Поиск работы
-        </router-link>
-      </va-navbar-item>
-      <va-navbar-item class="navbar__item">
-        <router-link
-            to="/reply"
-            class="nav-link"
-        >
-          Отклики
-        </router-link>
-      </va-navbar-item>
-      <va-navbar-item class="navbar__item">
-        <div class="user-info-block" v-if="isAuth">
-          <va-icon name="person" />
-          <div class="flex-row">
-            <div @click="goToCabinet">
-              username surname
-            </div>
-            <va-button
-                color="danger"
-            >
-              Выйти
-            </va-button>
-          </div>
-        </div>
-        <div
-            v-else
-        >
+      <div v-if="!isMobile" class="right-block">
+          <va-navbar-item class="navbar__item">
+              <router-link
+                      to="/"
+                      class="nav-link"
+              >
+                  Главная
+              </router-link>
+          </va-navbar-item>
+          <va-navbar-item class="navbar__item">
+              <router-link
+                      to="/search"
+                      class="nav-link"
+              >
+                  Поиск работы
+              </router-link>
+          </va-navbar-item>
+          <va-navbar-item class="navbar__item">
+              <router-link
+                      to="/reply"
+                      class="nav-link"
+              >
+                  Отклики
+              </router-link>
+          </va-navbar-item>
+          <va-navbar-item class="navbar__item">
+              <div class="user-info-block" v-if="isAuth">
+                  <va-icon name="person" />
+                  <div class="flex-row">
+                      <div @click="goToCabinet">
+                          username surname
+                      </div>
+                      <va-button
+                              color="danger"
+                      >
+                          Выйти
+                      </va-button>
+                  </div>
+              </div>
+              <div
+                      v-else
+              >
+                  <va-button
+                          @click="goToAuth"
+                  >
+                      Войти
+                  </va-button>
+              </div>
+          </va-navbar-item>
+      </div>
+      <div v-else>
           <va-button
-            @click="goToAuth"
-          >
-            Войти
-          </va-button>
-        </div>
-      </va-navbar-item>
+            icon="menu"
+            @click="showSidebar=true"
+          />
+      </div>
     </template>
   </va-navbar>
+    <VaSidebar v-model="showSidebar" class="right-navbar">
+        <VaSidebarItem @click="showSidebar=false">
+            <VaSidebarItemContent>
+                <VaSidebarItemTitle>
+                    <VaIcon name="close" />
+                    Закрыть
+                </VaSidebarItemTitle>
+            </VaSidebarItemContent>
+        </VaSidebarItem>
+        <VaSidebarItem>
+            <VaSidebarItemContent>
+                <router-link
+                        to="/"
+                        class="nav-link-sidebar"
+                >
+                    Главная
+                </router-link>
+            </VaSidebarItemContent>
+        </VaSidebarItem>
+        <VaSidebarItem>
+            <VaSidebarItemContent>
+                <router-link
+                    to="/search"
+                    class="nav-link-sidebar"
+                >
+                    Поиск работы
+                </router-link>
+            </VaSidebarItemContent>
+        </VaSidebarItem>
+        <VaSidebarItem>
+            <VaSidebarItemContent>
+                <router-link
+                    to="/reply"
+                    class="nav-link-sidebar"
+                >
+                    Отклики
+                </router-link>
+            </VaSidebarItemContent>
+        </VaSidebarItem>
+        <VaSidebarItem>
+            <VaSidebarItemContent>
+                <div class="user-info-block" v-if="isAuth">
+                    <va-icon name="person" />
+                    <div class="flex-row">
+                        <div @click="goToCabinet">
+                            username surname
+                        </div>
+                        <va-button
+                                color="danger"
+                        >
+                            Выйти
+                        </va-button>
+                    </div>
+                </div>
+                <div
+                        v-else
+                >
+                    <va-button
+                            @click="goToAuth"
+                    >
+                        Войти
+                    </va-button>
+                </div>
+            </VaSidebarItemContent>
+        </VaSidebarItem>
+    </VaSidebar>
 </template>
 
 <script>
@@ -71,18 +145,38 @@ export default {
         'isAuth'
     ])
   },
-  methods: {
-    goToAuth(){
-      this.$router.push('/auth')
-    },
-    goToCabinet(){
-      this.$router.push('/cabinet')
+  data(){
+    return {
+      showSidebar:false,
+      isMobile:false,
+      mql:null,
+      onChange:null,
     }
+  },
+    created() {
+        this.mql = window.matchMedia('(max-width: 860px)');
+        this.onChange = () => this.isMobile = this.mql.matches;
+        this.onChange();
+        this.mql.addEventListener('change', this.onChange);
+    },
+    unmounted() {
+        this.mql.removeEventListener('change', this.onChange);
+    },
+    methods: {
+      goToAuth(){
+        this.$router.push('/auth')
+      },
+      goToCabinet(){
+        this.$router.push('/cabinet')
+      }
   }
 }
 </script>
 
 <style scoped>
+.nav-link-sidebar {
+    color: #181818;
+}
 .flex-row {
   display: flex;
   gap: 1rem;
@@ -102,5 +196,13 @@ export default {
 .nav-link {
   cursor: pointer;
   color: white;
+}
+.right-navbar {
+  position: absolute;
+  right: 0;
+}
+.right-block {
+    display: flex;
+    gap: 0.5rem;
 }
 </style>
