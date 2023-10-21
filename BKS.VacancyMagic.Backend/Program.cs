@@ -25,6 +25,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(VacancyProfie));
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSwaggerGen(options =>
@@ -58,6 +60,8 @@ builder.Services.AddSwaggerGen(options =>
 //Register vacancy service to DI
 builder.Services.AddScoped<IVacancy, SuperjobService>();
 builder.Services.AddScoped<ISearch, ChadService>();
+
+builder.Services.AddScoped<ChadService>();
 
 //services.AddValidatorsFromAssemblyContaining<Validator>();
 
