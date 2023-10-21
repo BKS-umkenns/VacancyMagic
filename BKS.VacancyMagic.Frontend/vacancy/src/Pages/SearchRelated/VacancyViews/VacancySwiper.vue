@@ -126,7 +126,7 @@ export default {
 
 <style scoped>
 #swiper {
-  height: 50vh;
+  height: fit-content;
   width: 80%;
   margin: auto;
 }

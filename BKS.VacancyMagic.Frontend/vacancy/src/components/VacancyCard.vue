@@ -1,19 +1,36 @@
 <template>
   <va-card
-    square
-    outlined
     :id="vacancy.id"
     class="card"
   >
-    <va-card-title>{{vacancy.title}}</va-card-title>
-    <va-card-content>
-      {{vacancy.id}}
+    <div class="title" role="heading">
+      {{vacancy.title}}
+      <div class="rightTitleBox">
+        <div>
+          от {{vacancy.employer}}
+        </div>
+        <div>
+          <va-image
+            class="service-logo"
+            fit="contain"
+            :src="vacancy.serviceLogoUrl"
+          />
+        </div>
+      </div>
+    </div>
+    <va-card-content class="content">
+      <TagsContainer :tags="vacancy.tags" />
+      <div v-html="vacancy.description">
+      </div>
     </va-card-content>
   </va-card>
 </template>
 
 <script>
+import TagsContainer from "./TagsContainer.vue";
+
 export default {
+  components: {TagsContainer},
   props: {
     vacancy: {},
   },
@@ -22,7 +39,36 @@ export default {
 
 <style scoped>
 .card {
-  height: 50vh;
-  width: 80%;
+  width: 100%;
+  border: 2px solid var(--va-background-border);
+  border-radius: 8px;
 }
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 1rem 1.5rem 0 1.5rem;
+}
+.rightTitleBox {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+.service-logo {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 </style>
