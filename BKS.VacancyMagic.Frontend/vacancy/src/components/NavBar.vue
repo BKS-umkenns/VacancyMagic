@@ -136,7 +136,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "NavBar",
@@ -145,6 +145,11 @@ export default {
         'isAuth'
     ])
   },
+    watch: {
+      isMobile:function (newValue){
+          this.changeIsMobile(newValue);
+      }
+    },
   data(){
     return {
       showSidebar:false,
@@ -163,6 +168,9 @@ export default {
         this.mql.removeEventListener('change', this.onChange);
     },
     methods: {
+      ...mapMutations('Style',[
+          'changeIsMobile'
+      ]),
       goToAuth(){
         this.$router.push('/auth')
       },

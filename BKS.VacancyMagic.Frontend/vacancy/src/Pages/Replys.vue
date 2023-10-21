@@ -1,54 +1,22 @@
 <script>
 import NavBar from "../components/NavBar.vue";
+import {mapGetters} from "vuex";
+import ReplyCard from "../components/ReplyCard.vue";
 
 export default {
   components: {
+      ReplyCard,
     NavBar
+  },
+  computed: {
+    ...mapGetters('Reply',[
+        'items',
+        'statuses',
+        'services'
+    ])
   },
   data(){
     return {
-      items: [
-        {
-          id:1,
-          createdAt:'2023',
-          serviceId:'hh',
-          employer:'Яндекс',
-          vacancyName:'Главный тута',
-          description:'Ответсвенная должность...',
-          status: 1
-        },
-        {
-          id:2,
-          createdAt:'2022',
-          serviceId:'sj',
-          employer:'ИП Иванов',
-          vacancyName:'Уборщик',
-          description:'!!! ТОЛЬКО ДЛЯ ОТВЕТСВЕННЫХ !!!',
-          status:2
-        }
-      ],
-      statuses: [
-        {
-          id:1,
-          color:'warning',
-          title:'Отправлено'
-        },
-        {
-          id:2,
-          color:'success',
-          title:'Собеседование'
-        }
-      ],
-      companies: [
-        {
-          id: 'hh',
-          logo:'/hhLogo.png'
-        },
-        {
-          id: 'sj',
-          logo:'/superjob_logo_180.png'
-        }
-      ],
       columns: [
         {
           key: "createdAt",
@@ -93,7 +61,7 @@ export default {
       return this.statuses.find(el=>el.id == id);
     },
     getServiceInfo(id){
-      return this.companies.find(el=>el.id == id);
+      return this.services.find(el=>el.id == id);
     },
     openServiceLink(id){
       console.log('open service link'+id)
@@ -108,63 +76,29 @@ export default {
     <div class="info-block">
       На данной странице вы можете отслеживать свои отклики на разных сервисах, как только проихойдет изменения мы пришлем вам оповещение
     </div>
-    <div>
-      <va-data-table
-          :items="items"
-          :columns="columns"
-      >
-        <template #cell(serviceId)="{ value }">
-          <va-image
-            class="service-logo"
-            fit="contain"
-            :src="getServiceInfo(value).logo"
-          />
-        </template>
 
-        <template #cell(vacancyName)="{ value,rowData }">
-          <span
-              class="vacancy_link"
-              @click="openServiceLink(rowData.id)"
-          >
-            {{value}}
-          </span>
-        </template>
-        <template #cell(status)="{ value }">
-          <va-chip
-            size="small"
-            :color="getStatusInfo(value).color"
-          >
-            {{ getStatusInfo(value).title }}
-          </va-chip>
-        </template>
-        <template #cell(id)="{ value }">
-          <va-button
-              :rounded="false"
-              @click="openServiceLink(value)"
-          >
-            Открыть
-          </va-button>
-        </template>
-      </va-data-table>
+    <div class="replies-list">
+        <ReplyCard
+          v-for="reply in items"
+          :key="reply.id"
+          :reply="reply"
+        />
     </div>
   </div>
 </template>
 
 <style scoped>
-.service-logo {
-  max-width: 70px;
-  max-height: 70px;
-}
-.vacancy_link {
-  text-decoration: underline;
-  cursor: pointer;
-}
 .info-block {
   padding: 2rem;
 }
 .reply-page {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+}
+.replies-list {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  width: 100%;
 }
 </style>
