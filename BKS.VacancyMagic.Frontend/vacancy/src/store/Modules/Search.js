@@ -7,6 +7,7 @@ export default {
             {
                 id:1,
                 serviceId:'hh',
+                serviceLogoUrl:'/hhLogo.png',
                 inServiceId:3432,
                 employer:'Яндекс',
                 title:'Дериктор по логистике курьеров',
