@@ -4,7 +4,7 @@
       class="h-24"
   >
     <template #left>
-      <va-navbar-item class="logo navbar__item">
+      <va-navbar-item class="logo navbar__item" @click="goToMain()">
         Not Tomorrow
       </va-navbar-item>
     </template>
@@ -12,24 +12,24 @@
       <div v-if="!isMobile" class="right-block">
           <va-navbar-item class="navbar__item">
               <router-link
-                      to="/"
-                      class="nav-link"
+                  to="/"
+                  class="nav-link"
               >
                   Главная
               </router-link>
           </va-navbar-item>
           <va-navbar-item class="navbar__item">
               <router-link
-                      to="/search"
-                      class="nav-link"
+                to="/search"
+                class="nav-link"
               >
                   Поиск работы
               </router-link>
           </va-navbar-item>
           <va-navbar-item class="navbar__item">
               <router-link
-                      to="/reply"
-                      class="nav-link"
+                to="/reply"
+                class="nav-link"
               >
                   Отклики
               </router-link>
@@ -168,6 +168,9 @@ export default {
       },
       goToCabinet(){
         this.$router.push('/cabinet')
+      },
+      goToMain(){
+        this.$router.push('/')
       }
   }
 }

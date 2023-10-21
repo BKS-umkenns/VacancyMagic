@@ -140,8 +140,8 @@ export default {
   color: var(--va-primary);
 }
 .step-button {
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  padding: 1rem;
+  //box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  padding: 0.75rem;
   border-radius: .25rem;
   cursor: pointer;
   transition: .5s ease-in color;
