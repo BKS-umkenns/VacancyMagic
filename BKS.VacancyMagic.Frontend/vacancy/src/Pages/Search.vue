@@ -14,6 +14,7 @@ export default {
   watch: {
     actualStep:function (newValue){
       if(newValue === 3){
+        
         this.$router.push('/reply');
       }
     }
