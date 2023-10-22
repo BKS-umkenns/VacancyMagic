@@ -34,13 +34,13 @@ export default {
             }
             getters.token = savedToken;
 
-            const res = await axios.get('/api/check');
+            const res = await axios.get('/api/Auth/check');
             if(!res.data.valid){
                 dispatch('logout');
             }
         },
         async getUserInfo({ dispatch, commit }){
-            const res = await axios.get('/api/user');
+            const res = await axios.get('/api/Auth/user');
             if(res.data.success){
                 commit('changeUserInfo',res.data);
             } else {

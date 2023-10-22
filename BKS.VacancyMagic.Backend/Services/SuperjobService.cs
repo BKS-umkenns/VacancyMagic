@@ -14,11 +14,13 @@ public class SuperjobService : IVacancy
     private readonly AppDbContext _dbContext;
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public SuperjobService(AppDbContext dbContext, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    private readonly ILogger _logger;
+    public SuperjobService(AppDbContext dbContext, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, ILogger<SuperjobService> logger)
     {
         _dbContext = dbContext;
         _httpClient = httpClient;
         _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
     public string? BaseUrl { get; set; } = "https://api.superjob.ru/2.0";
     public string Title { get; set; } = "SuperJob";
@@ -34,12 +36,12 @@ public class SuperjobService : IVacancy
         if (authRequest.GrantType == "refresh_token")
         {
             var user = await _dbContext.Users.SingleAsync(x => x.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
-            var refreshToken = (await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id)).RefreshToken;
+            var serviceAuthorization = await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id);
             parameters = new Dictionary<string, string?>
             {
-                { "refresh_token", refreshToken },
+                { "refresh_token", serviceAuthorization.RefreshToken },
                 { "client_id", authRequest.ClientId },
-                { "client_secret", authRequest.SecretKey }
+                { "client_secret", authRequest.SecretKey == secretKey ? serviceAuthorization.SecretKey ?? secretKey : authRequest.SecretKey }
             };
         }
         else
@@ -86,6 +88,8 @@ public class SuperjobService : IVacancy
             }
         }
 
+        await SaveSearchQueryToDB(ct);
+
         strResult = await httpResult!.Content.ReadAsStringAsync(ct);
 
         var result = JsonSerializer.Deserialize<VacancyRecordDTO>(strResult);
@@ -93,25 +97,103 @@ public class SuperjobService : IVacancy
         return result;
     }
 
-    public Task<ReplyStatusDTO> GetReplyStatusAsync(ServiceReplyDTO serviceReply, CancellationToken ct)
+    public async Task<ReplyStatusDTO?> GetReplyStatusAsync(ServiceReplyDTO serviceReply, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var replyUrl = $"{BaseUrl}/send_cv_on_vacancy/";
+
+        await SetHttpHeadersAsync(ct);
+
+        var queryParams = new Dictionary<string, string?> { { "id_cv", "1" }, { "id_vacancy", "1" }, { "comment", "1" } }.ToQueryString();
+
+        var httpResult = await _httpClient.PostAsync($"{replyUrl}?{queryParams}", ct);
+
+        var strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        if (strResult!.Contains("error"))
+        {
+            var error = JsonSerializer.Deserialize<ErrorDTO>(strResult);
+            if (error != null && error.error!.code == 410)
+            {
+                await AuthorizationAsync(new AuthRequestDTO { GrantType = "refresh_token" }, ct);
+                httpResult = await RequestData(vacanciesUrl, prompt.ConvertToDictionary().ToQueryString(), ct);
+            }
+        }
+
+        strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        var result = JsonSerializer.Deserialize<ReplyStatusDTO>(strResult);
+
+        return result;
     }
 
-    public Task<ReplyDTO> ReplyAsync(VacancyRecordDTO record, CancellationToken ct)
+    public async Task<ReplyDTO?> ReplyAsync(VacancyRecordObject record, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var replyUrl = $"{BaseUrl}/send_cv_on_vacancy/";
+
+        await SetHttpHeadersAsync(ct);
+
+        var requestData = new { id_cv = 1, id_vacancy = 1, comment = "" };
+        var requestContent = JsonContent.Create(requestData);
+
+        var httpResult = await _httpClient.PostAsync(replyUrl, requestContent, ct);
+
+        var strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        if (strResult!.Contains("error"))
+        {
+            var error = JsonSerializer.Deserialize<ErrorDTO>(strResult);
+            if (error != null && error.error!.code == 410)
+            {
+                await AuthorizationAsync(new AuthRequestDTO { GrantType = "refresh_token" }, ct);
+                httpResult = await _httpClient.PostAsync(replyUrl, requestContent, ct);
+            }
+
+            if (error != null && error.error!.code == 403)
+            {
+                return null;
+            }
+        }
+
+        var statusReply = JsonSerializer.Deserialize<VacancyReplyResponse>(strResult);
+        if (statusReply!.result == false) return null;
+
+        var result = new ReplyDTO { ReplyId = record.id.ToString() };
+
+        return result;
     }
-    
+
     private async Task<HttpResponseMessage?> RequestData(string vacanciesUrl, string? prompt, CancellationToken ct)
     {
-        var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
-        var clientToken = (await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id)).AccessToken;
-
-        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", clientToken);
-        _httpClient.DefaultRequestHeaders.Add("X-Api-App-Id", "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466");
+        await SetHttpHeadersAsync(ct);
 
         return await _httpClient.GetAsync($"{vacanciesUrl}?{prompt}", ct);
+    }
+
+    private async Task SaveSearchQueryToDB(CancellationToken ct)
+    {
+        try
+        {
+            var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+            await _dbContext.SearchQueries.AddAsync(new DAL.Models.SearchQuery
+            {
+                CreatedAt = new DateTime(),
+                UserId = user.Id
+            });
+            await _dbContext.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+        }
+    }
+
+    private async Task SetHttpHeadersAsync(CancellationToken ct)
+    {
+        var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+        var serviceAuthorization = await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id);
+
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", serviceAuthorization.AccessToken);
+        _httpClient.DefaultRequestHeaders.Add("X-Api-App-Id", serviceAuthorization.SecretKey ?? "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466");
     }
 }
 
@@ -181,4 +263,9 @@ public class SuperjobKeywords
     public string? Skwc { get; set; }
     //Ключевое слово
     public string? Keys { get; set; }
+}
+
+public class VacancyReplyResponse
+{
+    public bool? result { get; set; }
 }

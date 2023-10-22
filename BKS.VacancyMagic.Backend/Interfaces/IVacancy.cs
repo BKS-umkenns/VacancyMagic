@@ -17,7 +17,7 @@ public interface IVacancy
     /// Получение списка вакансий
     /// </summary>
     /// <param name="prompt">Строка для поиска вакансий по ключевым словам(тегам)</param>
-    /// <returns></returns>
+    /// <returns>Вакансии</returns>
     public Task<VacancyRecordDTO?> GetDataAsync<TPrompt>(TPrompt prompt, CancellationToken ct) where TPrompt : class;
     /// <summary>
     /// Отклик на вакансию

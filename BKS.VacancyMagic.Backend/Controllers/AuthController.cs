@@ -93,4 +93,18 @@ public class AuthController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Ok();
     }
+
+    [HttpGet("user")]
+    public async Task<ActionResult<UserInfoDTO?>> userInfo(CancellationToken ct)
+    {
+        if (_contextAccessor.HttpContext!.User.Identity!.IsAuthenticated)
+        {
+            var user = await _dbContext.Users.SingleAsync(x => x.Name == _contextAccessor.HttpContext!.User.Identity!.Name, ct);
+            if (user == null) return BadRequest("User is not found");
+            var userInfo = _mapper.Map<UserInfoDTO>(user);
+            return Ok(userInfo);
+        }
+
+        return Unauthorized(new { Success = false });
+    }
 }

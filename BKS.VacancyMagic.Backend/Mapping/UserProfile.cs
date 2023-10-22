@@ -14,5 +14,11 @@ public class UserProfile : Profile
             .ReverseMap()
             .ForMember(dest => dest.Login, src => src.MapFrom(x => x.Name))
             .ForMember(dest => dest.Password, src => src.MapFrom(x => x.PasswordHash));
+
+        CreateMap<UserInfoDTO, User>()
+            .ForMember(dest => dest.Name, o => o.Ignore())
+            .ForMember(dest => dest.Id, o => o.Ignore())
+            .ForMember(dest => dest.PasswordHash, o => o.Ignore())
+            .ReverseMap();
     }
 }
