@@ -20,6 +20,7 @@ public partial class AppDbContext : DbContext
     public DbSet<ServiceAuthorization> ServiceAuthorizations { get; set; }
     public DbSet<SearchValue> SearchValues { get; set; }
     public DbSet<Service> Services { get; set; }
+    public DbSet<UserCV> UserCVs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

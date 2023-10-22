@@ -69,6 +69,12 @@ public sealed partial class AppDbContext
             entity.HasOne(x => x.Service).WithMany().HasForeignKey(x => x.ServiceId);
         });
 
+        builder.Entity<UserCV>(entity =>
+        {
+            entity.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
+            entity.HasOne(x => x.Service).WithMany().HasForeignKey(x => x.ServiceId);
+        });
+
         builder.Entity<Tag>(entity =>
         {
             entity.HasOne(x => x.Service).WithMany().HasForeignKey(x => x.ServiceId);
