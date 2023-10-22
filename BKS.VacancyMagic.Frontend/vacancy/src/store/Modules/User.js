@@ -51,7 +51,7 @@ export default {
             commit('changeToken',null);
         },
         async login({ dispatch, commit},credentials){
-            const res = await axios.post('/api/login',credentials);
+            const res = await axios.post('/api/Auth/login',credentials);
             if(res.data.success){
                 commit('changeToken',res.data.token);
                 dispatch('getUserInfo');
@@ -60,7 +60,7 @@ export default {
             }
         },
         async register({ commit,dispatch }, credentials){
-            const res = await axios.post('/api/register',credentials);
+            const res = await axios.post('/api/Auth/register',credentials);
             if(res.data.success){
                 commit('changeToken',res.data.token);
                 dispatch('getUserInfo');
