@@ -82,8 +82,8 @@ export default {
   data(){
     return {
       isLogin:true,
-      email:'',
-      password:'',
+      email:'test123',
+      password:'test123',
       name:'',
       lastname:'',
       middlename:'',

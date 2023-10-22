@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import TagsContainer from "../../../components/TagsContainer.vue";
 export default {
   components: {TagsContainer},
@@ -65,9 +65,9 @@ export default {
     ]),
   },
   methods: {
-    reply(id){
-      console.log(this.vacancies.find(el=>el.id === id))
-    }
+    ...mapActions('Reply',[
+        'reply'
+    ]),
   }
 }
 </script>

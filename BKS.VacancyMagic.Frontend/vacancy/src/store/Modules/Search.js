@@ -111,7 +111,7 @@ export default {
                 })
                 console.log(res.data);
 
-                // commit('changeVacations',res.data)
+                commit('changeVacations',res.data.objects)
             } catch (e){
                 console.error(e)
             }
@@ -124,9 +124,13 @@ export default {
         }
     },
     mutations: {
+        removeVac(state,id){
+            state.vacancies = state.vacancies.filter(el=>el.id !== id);
+        },
         changeVacations(state,vacs){
             state.vacancies = [];
             for (let i = 0; i < vacs.length; i++) {
+                if(i>2) break;
                 const vac = vacs[i];
                 const tags = [];
                 if(vac?.type_of_work.title.length>2){
@@ -161,7 +165,7 @@ export default {
                     serviceId:'sj',
                     serviceLogoUrl:'/superjob_logo_180.png',
                     inServiceId:vac.id,
-                    employer:vac.client.title,
+                    employer:'',
                     title:vac.profession,
                     description: vac.candidat,
                     tags

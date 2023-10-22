@@ -47,6 +47,14 @@ export default {
         ],
     }),
     actions:{
+        async auth(){
+          const res = await axios.get('/api/Vacancy/auth',{
+              params: {
+                  ClientId:'3106',
+                  login:'jeck1331@gmail.com'
+              }
+          })
+        },
         async loadReply({commit}){
             const res = await axios.get('/api/',{
                 params: {
@@ -55,12 +63,12 @@ export default {
             })
             commit('changeReplies',res.data);
         },
-        async reply({},id){
-            const res = await axios.get('/api/Reply/', {
-                params: {
-                    
-                }
+        async reply({commit,dispatch},id){
+            await dispatch('auth')
+            const res = await axios.post('/api/Vacancy/reply', {
+                id
             })
+            commit('/Search/removeVac',id);
         }
     },
     mutations: {
