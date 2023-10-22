@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BKS.VacancyMagic.Backend.DAL.Models;
 using BKS.VacancyMagic.Backend.Models.Search;
+using BKS.VacancyMagic.Backend.Models.Services;
+using BKS.VacancyMagic.Backend.Models.User;
 using BKS.VacancyMagic.Backend.Models.Vacancy;
 using BKS.VacancyMagic.Backend.Services;
 
@@ -35,5 +37,19 @@ public class VacancyProfie : Profile
             .ForMember(dest => dest.UserId, o => o.Ignore())
             .ReverseMap()
             .ForMember(dest => dest.id, src => src.MapFrom(x => x.VacancyId));
+
+        CreateMap<ServiceUserInfoDTO, UserInfoSuperjob>()
+            .ForMember(dest => dest.email, src => src.MapFrom(x => x.Email))
+            .ForMember(dest => dest.id_cv, src => src.MapFrom(x => x.ResumeId))
+            .ForMember(dest => dest.id, o => o.Ignore())
+            .ForMember(dest => dest.name, o => o.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.Email, src => src.MapFrom(x => x.email))
+            .ForMember(dest => dest.ResumeId, src => src.MapFrom(x => x.id_cv));
+
+        CreateMap<UserCVDTO, ResumeObjectSuperjob>()
+            .ForMember(dest => dest.id, src => src.MapFrom(x => x.id_cv))
+            .ReverseMap()
+            .ForMember(dest => dest.id_cv, src => src.MapFrom(x => x.id));
     }
 }

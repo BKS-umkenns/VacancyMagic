@@ -1,8 +1,11 @@
-﻿using BKS.VacancyMagic.Backend.DAL;
+﻿using AutoMapper;
+using BKS.VacancyMagic.Backend.DAL;
 using BKS.VacancyMagic.Backend.Extensions;
 using BKS.VacancyMagic.Backend.Interfaces;
 using BKS.VacancyMagic.Backend.Models;
 using BKS.VacancyMagic.Backend.Models.Auth;
+using BKS.VacancyMagic.Backend.Models.Services;
+using BKS.VacancyMagic.Backend.Models.User;
 using BKS.VacancyMagic.Backend.Models.Vacancy;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -15,12 +18,14 @@ public class SuperjobService : IVacancy
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
-    public SuperjobService(AppDbContext dbContext, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, ILogger<SuperjobService> logger)
+    private readonly IMapper _mapper;
+    public SuperjobService(AppDbContext dbContext, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, ILogger<SuperjobService> logger, IMapper mapper)
     {
         _dbContext = dbContext;
         _httpClient = httpClient;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
+        _mapper = mapper;
     }
     public string? BaseUrl { get; set; } = "https://api.superjob.ru/2.0";
     public string Title { get; set; } = "SuperJob";
@@ -88,7 +93,7 @@ public class SuperjobService : IVacancy
             }
         }
 
-        await SaveSearchQueryToDB(ct);
+        await SaveSearchQueryToDBAsync(ct);
 
         strResult = await httpResult!.Content.ReadAsStringAsync(ct);
 
@@ -99,13 +104,11 @@ public class SuperjobService : IVacancy
 
     public async Task<ReplyStatusDTO?> GetReplyStatusAsync(ServiceReplyDTO serviceReply, CancellationToken ct)
     {
-        var replyUrl = $"{BaseUrl}/send_cv_on_vacancy/";
+        var replyUrl = $"{BaseUrl}/messages/{serviceReply.id_cv}/";
 
         await SetHttpHeadersAsync(ct);
 
-        var queryParams = new Dictionary<string, string?> { { "id_cv", "1" }, { "id_vacancy", "1" }, { "comment", "1" } }.ToQueryString();
-
-        var httpResult = await _httpClient.PostAsync($"{replyUrl}?{queryParams}", ct);
+        var httpResult = await _httpClient.GetAsync($"{replyUrl}", ct);
 
         var strResult = await httpResult!.Content.ReadAsStringAsync(ct);
 
@@ -115,13 +118,19 @@ public class SuperjobService : IVacancy
             if (error != null && error.error!.code == 410)
             {
                 await AuthorizationAsync(new AuthRequestDTO { GrantType = "refresh_token" }, ct);
-                httpResult = await RequestData(vacanciesUrl, prompt.ConvertToDictionary().ToQueryString(), ct);
+                httpResult = await _httpClient.GetAsync($"{replyUrl}", ct);
             }
         }
 
         strResult = await httpResult!.Content.ReadAsStringAsync(ct);
 
-        var result = JsonSerializer.Deserialize<ReplyStatusDTO>(strResult);
+        var superjobResponse = JsonSerializer.Deserialize<SuperjobResponseReply>(strResult);
+         
+        var result = superjobResponse == null ? null : superjobResponse.objects == null ? null : new ReplyStatusDTO
+        {
+            Status = superjobResponse?.objects?.Count > 1 ? superjobResponse.objects.First(x => x.id.ToString() == serviceReply.ReplyId).status
+            : superjobResponse.objects[0].status
+        };
 
         return result;
     }
@@ -132,7 +141,10 @@ public class SuperjobService : IVacancy
 
         await SetHttpHeadersAsync(ct);
 
-        var requestData = new { id_cv = 1, id_vacancy = 1, comment = "" };
+        var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+        var usercv = await _dbContext.UserCVs.FirstAsync(uc => uc.UserId == user.Id, ct);
+
+        var requestData = new { id_cv = usercv.ResumeId, id_vacancy = record.id, comment = "" };
         var requestContent = JsonContent.Create(requestData);
 
         var httpResult = await _httpClient.PostAsync(replyUrl, requestContent, ct);
@@ -159,6 +171,58 @@ public class SuperjobService : IVacancy
 
         var result = new ReplyDTO { ReplyId = record.id.ToString() };
 
+        await SaveReplyToDBAsync(record.id, result.ReplyId, ct);
+
+        return result;
+    }
+
+    public async Task<List<UserCVDTO>?> ListCV(CancellationToken ct)
+    {
+        //var userInfoUrl = "https://api.superjob.ru/1.0/user_cvs/";
+
+        //await SetHttpHeadersAsync(ct);
+
+        //var httpResult = await _httpClient.GetAsync(userInfoUrl, ct);
+
+        //var strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        //if (strResult!.Contains("error"))
+        //{
+        //    var error = JsonSerializer.Deserialize<ErrorDTO>(strResult);
+        //    if (error != null && error.error!.code == 410)
+        //    {
+        //        await AuthorizationAsync(new AuthRequestDTO { GrantType = "refresh_token" }, ct);
+        //        httpResult = await _httpClient.GetAsync(userInfoUrl, ct);
+        //    }
+        //}
+        //strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        //var superjobResponse = JsonSerializer.Deserialize<ResumesSuperjob>(strResult);
+
+        //var result = _mapper.Map<List<UserCVDTO>?>(superjobResponse!.objects);
+
+        //await SaveResumesToDBAsync(result, ct);
+
+        //return result;
+
+        throw new NotImplementedException();
+    }
+    public async Task<ServiceUserInfoDTO> InfoUser(CancellationToken ct)
+    {
+        var userInfoUrl = $"{BaseUrl}/user/current";
+
+        await SetHttpHeadersAsync(ct);
+
+        var httpResult = await _httpClient.GetAsync(userInfoUrl, ct);
+
+        var strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        var superjobResponse = JsonSerializer.Deserialize<UserInfoSuperjob>(strResult);
+
+        var result = _mapper.Map<ServiceUserInfoDTO>(superjobResponse);
+
+        await SaveResumesToDBAsync(result, ct);
+
         return result;
     }
 
@@ -169,15 +233,54 @@ public class SuperjobService : IVacancy
         return await _httpClient.GetAsync($"{vacanciesUrl}?{prompt}", ct);
     }
 
-    private async Task SaveSearchQueryToDB(CancellationToken ct)
+    private async Task SaveResumesToDBAsync(ServiceUserInfoDTO resume, CancellationToken ct)
+    {
+        try
+        {
+            var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+            await _dbContext.UserCVs.AddAsync(new DAL.Models.UserCV
+            {
+                UserId = user.Id,
+                ServiceId = 1,
+                ResumeId = resume.ResumeId ?? 0
+            });
+            await _dbContext.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+        }
+    }
+
+    private async Task SaveSearchQueryToDBAsync(CancellationToken ct)
     {
         try
         {
             var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
             await _dbContext.SearchQueries.AddAsync(new DAL.Models.SearchQuery
             {
-                CreatedAt = new DateTime(),
-                UserId = user.Id
+                UserId = user.Id,
+                CreatedAt = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds()
+            });
+            await _dbContext.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+        }
+    }
+
+    private async Task SaveReplyToDBAsync(long vacancyId, string replyId, CancellationToken ct)
+    {
+        try
+        {
+            var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+            await _dbContext.Replies.AddAsync(new DAL.Models.Reply
+            {
+                UserId = user.Id,
+                ServiceId = 1,
+                VacancyId = vacancyId.ToString(),
+                ReplyId = replyId
             });
             await _dbContext.SaveChangesAsync(ct);
         }
@@ -190,10 +293,12 @@ public class SuperjobService : IVacancy
     private async Task SetHttpHeadersAsync(CancellationToken ct)
     {
         var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
-        var serviceAuthorization = await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id);
+        var serviceAuthorization = await _dbContext.ServiceAuthorizations.OrderByDescending(x => x.Id).FirstAsync(x => x.UserId == user.Id);
 
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", serviceAuthorization.AccessToken);
-        _httpClient.DefaultRequestHeaders.Add("X-Api-App-Id", serviceAuthorization.SecretKey ?? "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466");
+        //_httpClient.DefaultRequestHeaders.Add("X-Api-App-Id", serviceAuthorization.SecretKey ?? "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466");
+
+        _httpClient.DefaultRequestHeaders.Add("X-Api-App-Id", "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466");
     }
 }
 
@@ -268,4 +373,22 @@ public class SuperjobKeywords
 public class VacancyReplyResponse
 {
     public bool? result { get; set; }
+}
+public class UserInfoSuperjob
+{
+    public long? id { get; set; }
+    public string? email { get; set; }
+    public string? name { get; set; }
+    public long? id_cv { get; set; }
+}
+
+public class ResumesSuperjob
+{
+    public ResumeObjectSuperjob[]? objects { get; set; }
+    public long? total { get; set; }
+    public bool? more { get; set; }
+}
+public class ResumeObjectSuperjob
+{
+    public long? id { get; set; }
 }

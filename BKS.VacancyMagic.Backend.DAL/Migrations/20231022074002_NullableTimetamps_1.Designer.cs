@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BKS.VacancyMagic.Backend.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231022051834_SmallChangesInitialData")]
-    partial class SmallChangesInitialData
+    [Migration("20231022074002_NullableTimetamps_1")]
+    partial class NullableTimetamps_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,10 +33,14 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<long?>("CreatedAt")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ReplyId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<long>("ServiceId")
                         .HasColumnType("bigint");
@@ -65,10 +69,10 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<long?>("CreatedAt")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("bigint");
 
                     b.Property<long>("ReplyId")
                         .HasColumnType("bigint");
@@ -115,10 +119,10 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<long?>("CreatedAt")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("bigint");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -324,6 +328,32 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BKS.VacancyMagic.Backend.DAL.Models.UserCV", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ResumeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ServiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCVs");
+                });
+
             modelBuilder.Entity("BKS.VacancyMagic.Backend.DAL.Models.Reply", b =>
                 {
                     b.HasOne("BKS.VacancyMagic.Backend.DAL.Models.Service", "Service")
@@ -458,6 +488,25 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("BKS.VacancyMagic.Backend.DAL.Models.UserCV", b =>
+                {
+                    b.HasOne("BKS.VacancyMagic.Backend.DAL.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BKS.VacancyMagic.Backend.DAL.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

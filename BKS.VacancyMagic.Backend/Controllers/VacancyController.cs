@@ -3,6 +3,7 @@ using BKS.VacancyMagic.Backend.Extensions;
 using BKS.VacancyMagic.Backend.Interfaces;
 using BKS.VacancyMagic.Backend.Models.Auth;
 using BKS.VacancyMagic.Backend.Models.Search;
+using BKS.VacancyMagic.Backend.Models.User;
 using BKS.VacancyMagic.Backend.Models.Vacancy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +28,6 @@ public class VacancyController : Controller
         _httpContextAccesor = httpContextAccessor;
     }
 
-    /// <summary>
-    /// testMethod
-    /// </summary>
     [HttpGet("search")]
     public async Task<ActionResult<SearchResultDTO>> SearchVacancies([FromQuery][FromBody]string prompt, CancellationToken ct)
     {
@@ -77,8 +75,8 @@ public class VacancyController : Controller
         return BadRequest();
     }
 
-    [HttpPost]
-    public async Task<ActionResult<List<VacancyRecordDTO>?>> ReplyVacancy(VacancyRecordDTO vacancy, CancellationToken ct)
+    [HttpPost("reply")]
+    public async Task<ActionResult<List<VacancyRecordObject>?>> ReplyVacancy(VacancyRecordObject vacancy, CancellationToken ct)
     {
         var result = await _vacancyService.ReplyAsync(vacancy, ct);
 
@@ -89,4 +87,43 @@ public class VacancyController : Controller
 
         return BadRequest();
     }
+
+    [HttpGet("reply/status")]
+    public async Task<ActionResult<ReplyStatusDTO>> ReplyStatusVacancy(ServiceReplyDTO replyDTO, CancellationToken ct)
+    {
+        var result = await _vacancyService.GetReplyStatusAsync(replyDTO, ct);
+
+        if (result != null)
+        {
+            return Ok(result);
+        }
+
+        return BadRequest();
+    }
+
+    [HttpGet("userinfo")]
+    public async Task<ActionResult<ReplyStatusDTO>> GetInfoUser(CancellationToken ct)
+    {
+        var result = await _vacancyService.InfoUser(ct);
+
+        if (result != null)
+        {
+            return Ok(result);
+        }
+
+        return BadRequest();
+    }
+
+    //[HttpGet("resumes")]
+    //public async Task<ActionResult<List<UserCVDTO>?>> GetListCV(CancellationToken ct)
+    //{
+    //    var result = await _vacancyService.ListCV(ct);
+
+    //    if (result != null)
+    //    {
+    //        return Ok(result);
+    //    }
+
+    //    return BadRequest();
+    //}
 }
