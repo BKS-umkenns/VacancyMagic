@@ -130,7 +130,6 @@ export default {
         changeVacations(state,vacs){
             state.vacancies = [];
             for (let i = 0; i < vacs.length; i++) {
-                if(i>5) break;
                 const vac = vacs[i];
                 const tags = [];
                 if(vac?.type_of_work.title.length>2){
