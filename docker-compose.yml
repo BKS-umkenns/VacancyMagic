@@ -1,0 +1,36 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  bksbackend:
+    image: bksbackend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5041:80
+    depends_on:
+      - "bksdatabase"
+    networks:
+      - dev
+
+  bksdatabase:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - db_volume:/var/lib/postgresql/data/
+    container_name: bksdatabase
+    environment:
+      - POSTGRES_USER=baseuser
+      - POSTGRES_PASSWORD=baseuser123
+      - POSTGRES_DB=bksdatabase
+    ports:
+      - 5432:5432
+    networks:
+      - dev
+
+volumes:
+  db_volume:
