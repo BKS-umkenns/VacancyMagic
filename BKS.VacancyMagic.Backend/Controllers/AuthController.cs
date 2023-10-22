@@ -52,7 +52,7 @@ public class AuthController : Controller
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login([FromBody] LoginDTO req, CancellationToken ct)
+    public async Task<ActionResult<LoginSuccessDTO?>> Login([FromBody] LoginDTO req, CancellationToken ct)
     {
         if (ModelState.IsValid)
         {
@@ -66,7 +66,7 @@ public class AuthController : Controller
                 if (user.PasswordHash != req.Password) return BadRequest("Login or password incorrect");
                 await Authenticate(user.Name);
 
-                return Ok(user.Name);
+                return Ok(new LoginSuccessDTO { Token = user.Name });
             }
             catch (Exception ex)
             {
