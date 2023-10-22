@@ -15,10 +15,9 @@
     >
       <va-input
           v-model="email"
-          label="Email"
-          type="email"
+          label="Login"
           :rules="[
-            (value) => (value && value.length > 0) || 'Email обязателен',
+            (value) => (value && value.length > 0) || 'Login обязателен',
             (value) => validateEmail(value) || 'Некоректный Email'
           ]"
       />
@@ -37,7 +36,7 @@
         v-model="name"
         label="Имя"
         :rules="[
-              (val)=>(val.length>0) || 'Имя обязателеньно'
+              (val)=>(val.length>0) || 'Имя обязательно'
           ]"
       />
 
@@ -46,7 +45,7 @@
         v-model="lastname"
         label="Фамилия"
         :rules="[
-            (val)=>(val.length>0) || 'Фамилия обязателеньна'
+            (val)=>(val.length>0) || 'Фамилия обязательна'
         ]"
       />
 
@@ -62,14 +61,14 @@
           :disabled="!isValidForm"
           @click="action"
       >
-        {{isLogin?'Войти':'Зарегестрироваться'}}
+        {{isLogin?'Войти':'Зарегистрироваться'}}
       </va-button>
 
       <div class="change-mode-row">
         <div
           @click="changeMode()"
         >
-          {{isLogin?'Зарегестрироваться':'Войти'}}
+          {{isLogin?'Зарегистрироваться':'Войти'}}
         </div>
       </div>
     </va-form>
@@ -83,17 +82,17 @@ export default {
   data(){
     return {
       isLogin:true,
-      email:'',
-      password:'',
+      email:'test123',
+      password:'test123',
       name:'',
       lastname:'',
       middlename:'',
     }
   },
   methods: {
-      ...mapActions('User',[
-          'login'
-      ]),
+    ...mapActions('User',[
+        'login'
+    ]),
     changeMode(){
       this.isLogin = !this.isLogin;
     },
@@ -111,14 +110,32 @@ export default {
                   color:'danger'
               })
           }
+      } else {
+          const res = await this.register({
+              login:this.email,
+              password:this.password,
+              "email": this.email,
+              "firstName": this.name,
+              "lastName": this.lastname,
+              "middleName": this.middlename
+          })
+          if(res){
+              this.$router.push('/search');
+          } else {
+              this.$vaToast.init({
+                  message: 'Неправильные данные',
+                  color:'danger'
+              })
+          }
       }
     },
     validateEmail(email){
-      return String(email)
-          .toLowerCase()
-          .match(
-              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          );
+        return true
+      // return String(email)
+      //     .toLowerCase()
+      //     .match(
+      //         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      //     );
     },
     isValidForm() {
       if(!this.$refs.formRef) return false;

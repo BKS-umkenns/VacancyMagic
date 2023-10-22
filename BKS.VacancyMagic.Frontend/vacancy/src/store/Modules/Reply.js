@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export default {
     namespaced:'Reply',
     state:()=>({
@@ -45,7 +47,38 @@ export default {
         ],
     }),
     actions:{
+        async auth(){
+          const res = await axios.get('/api/Vacancy/auth',{
+              params: {
+                  ClientId:'3106',
+                  login:'jeck1331@gmail.com'
+              }
+          })
+        },
+        async loadReply({commit}){
+            const res = await axios.get('/api/',{
+                params: {
 
+                }
+            })
+            commit('changeReplies',res.data);
+        },
+        async reply({commit,dispatch},id){
+            await dispatch('auth')
+            const res = await axios.post('/api/Vacancy/reply', {
+
+            },{
+                params: {
+                    id
+                }
+            })
+            // commit('/Search/removeVac',id);
+        }
+    },
+    mutations: {
+      changeReplies(state,newArr){
+          state.list = newArr;
+      }
     },
     getters: {
         items(state){

@@ -33,7 +33,7 @@
           </div>
           <div>
             <va-button
-              @click.stop="reply(vac.id)"
+              @click.stop="replyMethod(vac.id)"
             >
               Откликнуться
             </va-button>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 import TagsContainer from "../../../components/TagsContainer.vue";
 export default {
   components: {TagsContainer},
@@ -65,9 +65,16 @@ export default {
     ]),
   },
   methods: {
-    reply(id){
-      console.log(this.vacancies.find(el=>el.id === id))
-    }
+    ...mapMutations('Search',[
+       'removeVac'
+    ]),
+    replyMethod(id){
+      this.removeVac(id);
+      this.reply(id)
+    },
+    ...mapActions('Reply',[
+        'reply'
+    ]),
   }
 }
 </script>
@@ -76,7 +83,7 @@ export default {
 .collapse-container {
   width: 100%;
   flex-grow: 1;
-    height: 60vh;
+  height: 60vh;
   overflow: auto;
 }
 .flex-grow {

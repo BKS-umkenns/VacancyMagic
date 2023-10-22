@@ -7,7 +7,7 @@ public class ReplyHistory
     public long Id { get; set; }
     public long StatusId { get; set; }
     [Timestamp]
-    public DateTime CreatedAt { get; set; }
+    public long? CreatedAt { get; set; } = DateTime.UtcNow.ToFileTime();
     public long ReplyId { get; set; }
 
 

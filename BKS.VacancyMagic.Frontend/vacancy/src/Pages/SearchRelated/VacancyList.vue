@@ -1,7 +1,7 @@
 <template>
   <div class="vacancy-list-container">
     <div class="description-text">
-      Мы подобрали вакансии, согласно вашим критериям
+      Мы подобрали вакансии согласно Вашим критериям
     </div>
 
     <div class="mode-switcher">
@@ -14,7 +14,7 @@
     </div>
 
     <div class="presentation-container">
-      <VacancysTable
+      <VacanciesTable
         v-if="selectedViewMode === 0"
       />
       <VacancySwiper v-else/>
@@ -23,12 +23,12 @@
 </template>
 
 <script>
-import VacancysTable from "./VacancyViews/VacancysTable.vue";
+import VacanciesTable from "./VacancyViews/VacanciesTable.vue";
 import VacancySwiper from "./VacancyViews/VacancySwiper.vue";
 import {mapGetters} from "vuex";
 
 export default {
-  components: {VacancySwiper, VacancysTable},
+  components: {VacancySwiper, VacanciesTable},
     computed: {
       ...mapGetters('Style',[
           'isMobile'

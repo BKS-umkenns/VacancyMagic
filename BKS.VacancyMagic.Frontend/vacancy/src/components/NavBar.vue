@@ -39,7 +39,7 @@
                   <va-icon name="person" />
                   <div class="flex-row">
                       <div @click="goToCabinet">
-                          username surname
+                        {{user.name}} {{ user.lastname}}
                       </div>
                       <va-button
                               color="danger"
@@ -112,7 +112,7 @@
                     <va-icon name="person" />
                     <div class="flex-row">
                         <div @click="goToCabinet">
-                            username surname
+                          {{user.name}} {{ user.lastname}}
                         </div>
                         <va-button
                                 color="danger"
@@ -142,7 +142,8 @@ export default {
   name: "NavBar",
   computed: {
     ...mapGetters('User',[
-        'isAuth'
+        'isAuth',
+        'user'
     ])
   },
     watch: {

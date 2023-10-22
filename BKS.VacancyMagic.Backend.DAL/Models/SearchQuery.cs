@@ -6,7 +6,7 @@ public class SearchQuery
 {
     public long Id { get; set; }
     [Timestamp]
-    public DateTime CreatedAt { get; set; }
+    public long? CreatedAt { get; set; } = DateTime.UtcNow.ToFileTime();
 
     public long UserId { get; set; }
     public User User { get; set; } = null!;
