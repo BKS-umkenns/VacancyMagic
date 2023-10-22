@@ -25,10 +25,21 @@
 <script>
 import VacancysTable from "./VacancyViews/VacancysTable.vue";
 import VacancySwiper from "./VacancyViews/VacancySwiper.vue";
+import {mapGetters} from "vuex";
 
 export default {
   components: {VacancySwiper, VacancysTable},
-  data(){
+    computed: {
+      ...mapGetters('Style',[
+          'isMobile'
+      ])
+    },
+    mounted() {
+      if(this.isMobile){
+          this.selectedViewMode = 1;
+      }
+    },
+    data(){
     return {
       selectedViewMode:0,
       modes:[
@@ -42,6 +53,7 @@ export default {
 
 <style scoped>
 .vacancy-list-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
