@@ -66,7 +66,7 @@ public class AuthController : Controller
                 if (user.PasswordHash != req.Password) return BadRequest("Login or password incorrect");
                 await Authenticate(user.Name);
 
-                return Ok(new LoginSuccessDTO { Token = user.Name });
+                return Ok(new LoginSuccessDTO { Token = user.Name, Success = true });
             }
             catch (Exception ex)
             {
