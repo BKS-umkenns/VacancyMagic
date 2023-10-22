@@ -58,7 +58,7 @@ export default {
                   implemented: true,
               },
               {
-                  name: "Отлик",
+                  name: "Отклик",
                   implemented: true,
               },
               {
@@ -82,7 +82,7 @@ export default {
                   implemented: true,
               },
               {
-                  name: "Отлик",
+                  name: "Отклик",
                   implemented: false,
               },
               {
@@ -106,7 +106,7 @@ export default {
               implemented: false,
             },
             {
-              name: "Отлик",
+              name: "Отклик",
               implemented: false,
             },
             {
@@ -174,6 +174,9 @@ export default {
     justify-content: center;
     align-items: center;
     margin: 2rem 0;
+}
+#typed-strings {
+  display: none;
 }
 .page {
   padding-top: 2rem;

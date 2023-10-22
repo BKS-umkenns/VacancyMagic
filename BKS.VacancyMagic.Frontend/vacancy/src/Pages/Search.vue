@@ -25,8 +25,8 @@
             </div>
         </template>
         <template #step-content-0>
-            <AiPromtStep
-                ref="aiPromt"
+            <AiPromptStep
+                ref="aiPrompt"
             />
         </template>
         <template #step-content-1>
@@ -54,7 +54,7 @@
 
 <script>
 import NavBar from "../components/NavBar.vue";
-import AiPromtStep from "./SearchRelated/AiPromtStep.vue";
+import AiPromptStep from "./SearchRelated/AiPromptStep.vue";
 import ConfirmFilters from "./SearchRelated/ConfirmFilters.vue";
 import VacancyList from "./SearchRelated/VacancyList.vue";
 import {mapActions, mapGetters, mapMutations} from "vuex";
@@ -63,7 +63,7 @@ export default {
     components: {
         VacancyList,
         ConfirmFilters,
-        AiPromtStep,
+        AiPromptStep,
         NavBar
     },
     watch: {
@@ -91,7 +91,7 @@ export default {
     },
     computed: {
         ...mapGetters('Search',[
-            'isValidPromtText',
+            'isValidPromptText',
             'searchState'
         ]),
         actualStep: {
@@ -114,7 +114,7 @@ export default {
         ]),
         isNextBtnAvailable(step){
             if(step.icon === 'list') {
-                return this.isValidPromtText
+                return this.isValidPromptText;
             }
             return true;
         },
@@ -124,7 +124,7 @@ export default {
         },
         handleNextButton(step,nextStepFunc){
             if(step.icon === 'list') {
-                // console.log(this.$refs.aiPromt.validatePromt())
+                // console.log(this.$refs.aiPrompt.validatePrompt())
                 //call get specifications for search on external services (next step)
             }
             nextStepFunc();
