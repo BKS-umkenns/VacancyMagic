@@ -14,7 +14,7 @@ export default defineConfig(({ command }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    base: command === 'serve' ? "" : "/test-cloud-frontend/",
+    base: '',
     server: {
       host: true,
       port: 4173, // This is the port which we will use in docker
@@ -23,9 +23,9 @@ export default defineConfig(({ command }) => {
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:5050/',
+          target: 'http://localhost:5041/',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => path,
         }
       }
     }
