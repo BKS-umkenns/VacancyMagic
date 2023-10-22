@@ -15,10 +15,9 @@
     >
       <va-input
           v-model="email"
-          label="Email"
-          type="email"
+          label="Login"
           :rules="[
-            (value) => (value && value.length > 0) || 'Email обязателен',
+            (value) => (value && value.length > 0) || 'Login обязателен',
             (value) => validateEmail(value) || 'Некоректный Email'
           ]"
       />
@@ -111,14 +110,32 @@ export default {
                   color:'danger'
               })
           }
+      } else {
+          const res = await this.register({
+              login:this.email,
+              password:this.password,
+              "email": this.email,
+              "firstName": this.name,
+              "lastName": this.lastname,
+              "middleName": this.middlename
+          })
+          if(res){
+              this.$router.push('/search');
+          } else {
+              this.$vaToast.init({
+                  message: 'Неправильные данные',
+                  color:'danger'
+              })
+          }
       }
     },
     validateEmail(email){
-      return String(email)
-          .toLowerCase()
-          .match(
-              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          );
+        return true
+      // return String(email)
+      //     .toLowerCase()
+      //     .match(
+      //         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      //     );
     },
     isValidForm() {
       if(!this.$refs.formRef) return false;

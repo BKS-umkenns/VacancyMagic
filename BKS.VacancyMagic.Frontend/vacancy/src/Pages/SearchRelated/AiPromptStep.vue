@@ -22,6 +22,7 @@
 <script>
 
 import {mapGetters, mapMutations} from "vuex";
+import axios from "axios";
 
 export default {
   computed: {

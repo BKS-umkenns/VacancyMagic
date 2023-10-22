@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export default {
     namespaced:'Reply',
     state:()=>({
@@ -45,7 +47,26 @@ export default {
         ],
     }),
     actions:{
+        async loadReply({commit}){
+            const res = await axios.get('/api/',{
+                params: {
 
+                }
+            })
+            commit('changeReplies',res.data);
+        },
+        async reply({},id){
+            const res = await axios.get('/api/Reply/', {
+                params: {
+                    
+                }
+            })
+        }
+    },
+    mutations: {
+      changeReplies(state,newArr){
+          state.list = newArr;
+      }
     },
     getters: {
         items(state){

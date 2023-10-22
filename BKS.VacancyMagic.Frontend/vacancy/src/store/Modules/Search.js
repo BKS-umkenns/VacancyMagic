@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export default {
     namespaced:'Search',
     state: ()=>({
@@ -91,14 +93,85 @@ export default {
                     }
                 ]
             }
-        ]
+        ],
+        isLoading:false,
     }),
     actions:{
+        async loadVanaciesByPromt({getters, commit},promt){
+            commit('changeIsLoading',true)
+            // setTimeout(()=>{
+            //     commit('changeIsLoading',false)
+            // },5000)
+            console.log(getters.searchState.actualPrompt);
+            try {
+                const res = await axios.get('/api/Vacancy/search',{
+                    params: {
+                        prompt:getters.searchState.actualPrompt,
+                    }
+                })
+                console.log(res.data);
+
+                // commit('changeVacations',res.data)
+            } catch (e){
+                console.error(e)
+            }
+            commit('changeIsLoading',false)
+
+
+        },
         newStart({commit}){
             commit('clear')
         }
     },
     mutations: {
+        changeVacations(state,vacs){
+            state.vacancies = [];
+            for (let i = 0; i < vacs.length; i++) {
+                const vac = vacs[i];
+                const tags = [];
+                if(vac?.type_of_work.title.length>2){
+                    tags.push({
+                        id:1,
+                        name:vac?.type_of_work.title,
+                        value:'',
+                        color:'success',
+                    })
+                }
+
+                if(vac?.experience.title.length>2){
+                    tags.push({
+                        id:1,
+                        name:vac?.experience.title,
+                        value:'',
+                        color:'success',
+                    })
+                }
+
+                if(vac?.agency.title.length>2){
+                    tags.push({
+                        id:1,
+                        name:vac?.agency.title,
+                        value:'',
+                        color:'success',
+                    })
+                }
+
+                state.vacancies.push({
+                    id:vac.id,
+                    serviceId:'sj',
+                    serviceLogoUrl:'/superjob_logo_180.png',
+                    inServiceId:vac.id,
+                    employer:vac.client.title,
+                    title:vac.profession,
+                    description: vac.candidat,
+                    tags
+                })
+            }
+
+        },
+        changeIsLoading(state,newVal){
+            state.isLoading = newVal;
+        },
         changeState(state,newStateData){
             if(newStateData.actualPrompt !== undefined) state.actualPrompt = newStateData.actualPrompt;
             if(newStateData.actualStep !== undefined) state.actualStep = newStateData.actualStep;
@@ -110,6 +183,9 @@ export default {
         }
     },
     getters:{
+        isLoading(state){
+            return state.isLoading;
+        },
         isValidPromptText(state){
             return state.actualPrompt.length < 125;
         },

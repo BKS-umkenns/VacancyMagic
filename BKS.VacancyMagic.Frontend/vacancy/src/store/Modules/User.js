@@ -63,9 +63,13 @@ export default {
         },
         async register({ commit,dispatch }, credentials){
             const res = await axios.post('/api/Auth/register',credentials);
+            await dispatch('login',{
+                login:credentials.email,
+                password:credentials.password
+            })
             if(res.data.success){
-                commit('changeToken',res.data.token);
-                dispatch('getUserInfo');
+                // commit('changeToken',res.data.token);
+                // dispatch('getUserInfo');
             } else {
                 // TO-DO: Handle bad response
             }
