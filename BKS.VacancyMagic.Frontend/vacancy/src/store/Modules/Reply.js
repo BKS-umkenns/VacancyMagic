@@ -72,7 +72,7 @@ export default {
                     id
                 }
             })
-            commit('/Search/removeVac',id);
+            // commit('/Search/removeVac',id);
         }
     },
     mutations: {

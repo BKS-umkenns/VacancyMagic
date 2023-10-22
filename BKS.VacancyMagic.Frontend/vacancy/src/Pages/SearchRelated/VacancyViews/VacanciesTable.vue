@@ -33,7 +33,7 @@
           </div>
           <div>
             <va-button
-              @click.stop="reply(vac.id)"
+              @click.stop="replyMethod(vac.id)"
             >
               Откликнуться
             </va-button>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 import TagsContainer from "../../../components/TagsContainer.vue";
 export default {
   components: {TagsContainer},
@@ -65,6 +65,13 @@ export default {
     ]),
   },
   methods: {
+    ...mapMutations('Search',[
+       'removeVac'
+    ]),
+    replyMethod(id){
+      this.removeVac(id);
+      this.reply(id)
+    },
     ...mapActions('Reply',[
         'reply'
     ]),
