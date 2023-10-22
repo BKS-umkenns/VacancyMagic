@@ -10,20 +10,20 @@
     </template>
     <template #right>
       <div v-if="!isMobile" class="right-block">
-          <va-navbar-item class="navbar__item">
-              <router-link
-                  to="/"
-                  class="nav-link"
-              >
-                  Главная
-              </router-link>
-          </va-navbar-item>
+<!--          <va-navbar-item class="navbar__item">-->
+<!--              <router-link-->
+<!--                  to="/"-->
+<!--                  class="nav-link"-->
+<!--              >-->
+<!--                  Главная-->
+<!--              </router-link>-->
+<!--          </va-navbar-item>-->
           <va-navbar-item class="navbar__item">
               <router-link
                 to="/search"
                 class="nav-link"
               >
-                  Поиск работы
+                  Найти работу
               </router-link>
           </va-navbar-item>
           <va-navbar-item class="navbar__item">
@@ -217,6 +217,6 @@ export default {
 }
 .right-block {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 </style>

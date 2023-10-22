@@ -77,6 +77,8 @@
 </template>
 
 <script>
+import {mapActions} from "vuex";
+
 export default {
   data(){
     return {
@@ -89,11 +91,19 @@ export default {
     }
   },
   methods: {
+      ...mapActions('User',[
+          'login'
+      ]),
     changeMode(){
       this.isLogin = !this.isLogin;
     },
     action(){
-      console.log('action')
+      if(this.isLogin){
+          this.login({
+              login:this.email,
+              password:this.password
+          })
+      }
     },
     validateEmail(email){
       return String(email)
