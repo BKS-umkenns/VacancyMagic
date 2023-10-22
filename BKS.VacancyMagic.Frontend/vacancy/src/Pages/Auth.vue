@@ -97,12 +97,20 @@ export default {
     changeMode(){
       this.isLogin = !this.isLogin;
     },
-    action(){
+    async action(){
       if(this.isLogin){
-          this.login({
+          const res = await this.login({
               login:this.email,
               password:this.password
           })
+          if(res){
+            this.$router.push('/search');
+          } else {
+              this.$vaToast.init({
+                  message: 'Неправильные данные',
+                  color:'danger'
+              })
+          }
       }
     },
     validateEmail(email){
