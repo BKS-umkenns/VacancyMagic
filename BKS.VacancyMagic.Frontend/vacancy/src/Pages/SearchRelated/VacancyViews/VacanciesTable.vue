@@ -76,7 +76,7 @@ export default {
 .collapse-container {
   width: 100%;
   flex-grow: 1;
-    height: 60vh;
+  height: 60vh;
   overflow: auto;
 }
 .flex-grow {

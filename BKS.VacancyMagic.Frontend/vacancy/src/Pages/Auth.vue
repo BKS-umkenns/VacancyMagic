@@ -37,7 +37,7 @@
         v-model="name"
         label="Имя"
         :rules="[
-              (val)=>(val.length>0) || 'Имя обязателеньно'
+              (val)=>(val.length>0) || 'Имя обязательно'
           ]"
       />
 
@@ -46,7 +46,7 @@
         v-model="lastname"
         label="Фамилия"
         :rules="[
-            (val)=>(val.length>0) || 'Фамилия обязателеньна'
+            (val)=>(val.length>0) || 'Фамилия обязательна'
         ]"
       />
 
@@ -62,14 +62,14 @@
           :disabled="!isValidForm"
           @click="action"
       >
-        {{isLogin?'Войти':'Зарегестрироваться'}}
+        {{isLogin?'Войти':'Зарегистрироваться'}}
       </va-button>
 
       <div class="change-mode-row">
         <div
           @click="changeMode()"
         >
-          {{isLogin?'Зарегестрироваться':'Войти'}}
+          {{isLogin?'Зарегистрироваться':'Войти'}}
         </div>
       </div>
     </va-form>
@@ -91,9 +91,9 @@ export default {
     }
   },
   methods: {
-      ...mapActions('User',[
-          'login'
-      ]),
+    ...mapActions('User',[
+        'login'
+    ]),
     changeMode(){
       this.isLogin = !this.isLogin;
     },

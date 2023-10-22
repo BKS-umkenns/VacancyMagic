@@ -31,12 +31,12 @@ export default {
         {
           key: "employer",
           name: "employer",
-          label: "Работадатель"
+          label: "Работодатель"
         },
         {
           key: "vacancyName",
           name: "vacancyName",
-          label: "Название"
+          label: "Вакансия"
         },
         {
           key: "description",
@@ -58,10 +58,10 @@ export default {
   },
   methods: {
     getStatusInfo(id){
-      return this.statuses.find(el=>el.id == id);
+      return this.statuses.find(el=>el.id === id);
     },
     getServiceInfo(id){
-      return this.services.find(el=>el.id == id);
+      return this.services.find(el=>el.id === id);
     },
     openServiceLink(id){
       console.log('open service link'+id)
@@ -74,7 +74,7 @@ export default {
   <NavBar />
   <div class="reply-page">
     <div class="info-block">
-      На данной странице вы можете отслеживать свои отклики на разных сервисах, как только проихойдет изменения мы пришлем вам оповещение
+      На данной странице Вы можете отслеживать свои отклики на разных сервисах, как только произойдут изменения мы пришлем Вам оповещение
     </div>
 
     <div class="replies-list">
