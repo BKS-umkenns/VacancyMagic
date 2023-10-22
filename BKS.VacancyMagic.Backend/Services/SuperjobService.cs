@@ -1,8 +1,10 @@
-﻿using BKS.VacancyMagic.Backend.Common.Extensions;
-using BKS.VacancyMagic.Backend.DAL;
+﻿using BKS.VacancyMagic.Backend.DAL;
+using BKS.VacancyMagic.Backend.Extensions;
 using BKS.VacancyMagic.Backend.Interfaces;
+using BKS.VacancyMagic.Backend.Models;
 using BKS.VacancyMagic.Backend.Models.Auth;
 using BKS.VacancyMagic.Backend.Models.Vacancy;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace BKS.VacancyMagic.Backend.Services;
@@ -11,30 +13,47 @@ public class SuperjobService : IVacancy
 {
     private readonly AppDbContext _dbContext;
     private readonly HttpClient _httpClient;
-    public SuperjobService(AppDbContext dbContext, HttpClient httpClient)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public SuperjobService(AppDbContext dbContext, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
         _dbContext = dbContext;
         _httpClient = httpClient;
+        _httpContextAccessor = httpContextAccessor;
     }
     public string? BaseUrl { get; set; } = "https://api.superjob.ru/2.0";
     public string Title { get; set; } = "SuperJob";
 
     public async Task<AuthResultDTO> AuthorizationAsync(AuthRequestDTO authRequest, CancellationToken ct)
     {
-        var authUrl = $"{BaseUrl}/oauth2/password/";
-        var pass = "testpas123";
+        var authUrl = authRequest.GrantType == "refresh_token" ? $"{BaseUrl}/oauth2/refresh_token/" : $"{BaseUrl}/oauth2/password/";
         var secretKey = "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466";
-
-        authRequest.Password = authRequest.Password ?? pass;
         authRequest.SecretKey = authRequest.SecretKey ?? secretKey;
 
-        var parameters = new Dictionary<string, string>
+        Dictionary<string, string?> parameters;
+
+        if (authRequest.GrantType == "refresh_token")
         {
-            { "login", authRequest.Login! },
-            { "password", authRequest.Password },
-            { "client_id", authRequest.ClientId ?? "" },
-            { "client_secret", authRequest.SecretKey }
-        };
+            var user = await _dbContext.Users.SingleAsync(x => x.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+            var refreshToken = (await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id)).RefreshToken;
+            parameters = new Dictionary<string, string?>
+            {
+                { "refresh_token", refreshToken },
+                { "client_id", authRequest.ClientId },
+                { "client_secret", authRequest.SecretKey }
+            };
+        }
+        else
+        {
+            var pass = "testpas123";
+            authRequest.Password = authRequest.Password ?? pass;
+            parameters = new Dictionary<string, string?>
+            {
+                { "login", authRequest.Login },
+                { "password", authRequest.Password },
+                { "client_id", authRequest.ClientId },
+                { "client_secret", authRequest.SecretKey }
+            };
+        }
 
         var httpResult = await _httpClient.GetAsync($"{authUrl}?{parameters.ToQueryString()}", ct);
 
@@ -49,17 +68,27 @@ public class SuperjobService : IVacancy
         };
     }
 
-    public async Task<List<VacancyRecordDTO?>> GetDataAsync<TPrompt>(TPrompt prompt, CancellationToken ct) where TPrompt : class
+    public async Task<VacancyRecordDTO?> GetDataAsync<TPrompt>(TPrompt prompt, CancellationToken ct) where TPrompt : class
     {
-        var vacanciesUrl = $"{BaseUrl}/vancies/";
+        var vacanciesUrl = $"{BaseUrl}/vacancies/";
 
-        var s = prompt.ConvertToDictionary().ToQueryString();
+        var httpResult = await RequestData(vacanciesUrl, prompt.ConvertToDictionary().ToQueryString(), ct);
 
-        var httpResult = await _httpClient.GetAsync($"{vacanciesUrl}?{prompt.ConvertToDictionary().ToQueryString()}", ct);
+        var strResult = await httpResult!.Content.ReadAsStringAsync(ct);
 
-        var superjobResult = JsonSerializer.Deserialize<VacancyRecordDTO>(await httpResult.Content.ReadAsStringAsync(ct));
+        if (strResult!.Contains("error"))
+        {
+            var error = JsonSerializer.Deserialize<ErrorDTO>(strResult);
+            if (error != null && error.error!.code == 410)
+            {
+                await AuthorizationAsync(new AuthRequestDTO { GrantType = "refresh_token" }, ct);
+                httpResult = await RequestData(vacanciesUrl, prompt.ConvertToDictionary().ToQueryString(), ct);
+            }
+        }
 
-        var result = new List<VacancyRecordDTO?> { superjobResult };
+        strResult = await httpResult!.Content.ReadAsStringAsync(ct);
+
+        var result = JsonSerializer.Deserialize<VacancyRecordDTO>(strResult);
 
         return result;
     }
@@ -72,6 +101,17 @@ public class SuperjobService : IVacancy
     public Task<ReplyDTO> ReplyAsync(VacancyRecordDTO record, CancellationToken ct)
     {
         throw new NotImplementedException();
+    }
+    
+    private async Task<HttpResponseMessage?> RequestData(string vacanciesUrl, string? prompt, CancellationToken ct)
+    {
+        var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccessor.HttpContext!.User.Identity!.Name, ct);
+        var clientToken = (await _dbContext.ServiceAuthorizations.OrderBy(x => x.Id).FirstAsync(x => x.UserId == user.Id)).AccessToken;
+
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", clientToken);
+        _httpClient.DefaultRequestHeaders.Add("X-Api-App-Id", "v3.r.137902953.2438a9ca6677da093e5068ff8b52c65119ccbd0e.db749930ceec732297cc24f351ef405d053c4466");
+
+        return await _httpClient.GetAsync($"{vacanciesUrl}?{prompt}", ct);
     }
 }
 

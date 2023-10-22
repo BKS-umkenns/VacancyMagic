@@ -252,6 +252,16 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[] { 1L, "SuperJob" });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "FirstName", "LastName", "MiddleName", "Name", "PasswordHash" },
+                values: new object[] { 1L, "test@mail.test", "admin", "admin", "admin", "test123", "test123" });
+
+            migrationBuilder.InsertData(
+                table: "ServiceAuthorizations",
+                columns: new[] { "Id", "AccessToken", "RefreshToken", "ServiceId", "UserId" },
+                values: new object[] { 1L, "v3.r.137902953.5a4ad294828a9de685646546c324d48fe6da0aaa.187cad61ee9bc617932d8ecc5a936804c1a0b43a", "v3.r.137902953.5a4ad294828a9de685646546c324d48fe6da0aaa.187cad61ee9bc617932d8ecc5a936804c1a0b43a", 1L, 1L });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Replies_ServiceId",
                 table: "Replies",

@@ -237,6 +237,16 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ServiceAuthorizations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AccessToken = "v3.r.137902953.5a4ad294828a9de685646546c324d48fe6da0aaa.187cad61ee9bc617932d8ecc5a936804c1a0b43a",
+                            RefreshToken = "v3.r.137902953.5a4ad294828a9de685646546c324d48fe6da0aaa.187cad61ee9bc617932d8ecc5a936804c1a0b43a",
+                            ServiceId = 1L,
+                            UserId = 1L
+                        });
                 });
 
             modelBuilder.Entity("BKS.VacancyMagic.Backend.DAL.Models.Tag", b =>
@@ -293,6 +303,18 @@ namespace BKS.VacancyMagic.Backend.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Email = "test@mail.test",
+                            FirstName = "admin",
+                            LastName = "admin",
+                            MiddleName = "admin",
+                            Name = "test123",
+                            PasswordHash = "test123"
+                        });
                 });
 
             modelBuilder.Entity("BKS.VacancyMagic.Backend.DAL.Models.Reply", b =>

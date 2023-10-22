@@ -1,9 +1,9 @@
 ﻿using BKS.VacancyMagic.Backend.DAL;
+using BKS.VacancyMagic.Backend.Extensions;
 using BKS.VacancyMagic.Backend.Interfaces;
 using BKS.VacancyMagic.Backend.Models.Auth;
 using BKS.VacancyMagic.Backend.Models.Search;
 using BKS.VacancyMagic.Backend.Models.Vacancy;
-using BKS.VacancyMagic.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,9 +31,11 @@ public class VacancyController : Controller
     /// testMethod
     /// </summary>
     [HttpGet("search")]
-    public async Task<ActionResult<SearchResponse>> GetChatSearch([FromQuery][FromBody]string prompt, CancellationToken ct)
+    public async Task<ActionResult<SearchResultDTO>> SearchVacancies([FromQuery][FromBody]string prompt, CancellationToken ct)
     {
-        var result = await _searchService.SearchAsync(prompt, ct);
+        var searchResultString = await _searchService.SearchAsync(prompt, ct);
+
+        var result = await _vacancyService.GetDataAsync(searchResultString.response!.ToSearchObject()!, ct);
 
         if (result != null)
         {
@@ -52,6 +54,7 @@ public class VacancyController : Controller
         {
             var user = await _dbContext.Users.SingleAsync(user => user.Name == _httpContextAccesor.HttpContext!.User.Identity!.Name, ct);
             var service = await _dbContext.Services.SingleAsync(service => service.Name == _vacancyService.Title, ct);
+
             await _dbContext.ServiceAuthorizations.AddAsync(new DAL.Models.ServiceAuthorization
             {
                 AccessToken = result!.AccessToken!,
@@ -74,18 +77,6 @@ public class VacancyController : Controller
         return BadRequest();
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<VacancyRecordDTO>?>> GetData(SuperJobVacancyPrompt prompt, CancellationToken ct)
-    {
-        var result = await _vacancyService.GetDataAsync(prompt, ct);
-
-        if (result != null)
-        {
-            return Ok(result);
-        }
-
-        return BadRequest();
-    }
     [HttpPost]
     public async Task<ActionResult<List<VacancyRecordDTO>?>> ReplyVacancy(VacancyRecordDTO vacancy, CancellationToken ct)
     {
