@@ -55,7 +55,9 @@ export default {
             if(res.data.success){
                 commit('changeToken',res.data.token);
                 dispatch('getUserInfo');
+                return true;
             } else {
+                return false
                 // TO-DO: Handle bad response
             }
         },
