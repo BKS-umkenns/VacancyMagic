@@ -14,7 +14,7 @@ export default defineConfig(({ command }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    base: '',
+    base: '/VacancyMagic/',
     server: {
       host: true,
       port: 4173, // This is the port which we will use in docker
