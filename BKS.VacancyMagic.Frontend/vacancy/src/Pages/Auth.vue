@@ -91,7 +91,7 @@ export default {
     }
   },
   methods: {
-      ...mapActions('Yser',[
+      ...mapActions('User',[
           'login'
       ]),
     changeMode(){
