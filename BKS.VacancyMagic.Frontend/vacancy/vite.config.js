@@ -14,7 +14,7 @@ export default defineConfig(({ command }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    base: '/VacancyMagic/',
+    base: '',
     server: {
       host: true,
       port: 4173, // This is the port which we will use in docker
@@ -23,7 +23,7 @@ export default defineConfig(({ command }) => {
       },
       proxy: {
         '/api': {
-          target: 'http://bks-team.xn--d1ac2aa8b.xn--p1acf:5041',//'http://localhost:5041',//
+          target: 'http://localhost:5041',
           changeOrigin: true,
           rewrite: (path) => path,
         }
