@@ -23,7 +23,7 @@ export default defineConfig(({ command }) => {
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:5041/',
+          target: 'http://bks-team.xn--d1ac2aa8b.xn--p1acf:5041',
           changeOrigin: true,
           rewrite: (path) => path,
         }
