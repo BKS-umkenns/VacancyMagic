@@ -20,6 +20,7 @@ public class VacancyRecordObject
     public string? profession { get; set; }
     public string? work { get; set; }
     public string? currency { get; set; }
+    public string? candidat { get; set; }
     public bool? moveable { get; set; }
     public IdTitle? type_of_work { get; set; }
     public IdTitle? place_of_work { get; set; }

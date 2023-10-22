@@ -5,8 +5,9 @@ namespace BKS.VacancyMagic.Backend.DAL.Models;
 public class Reply
 {
     public long Id { get; set; }
+    public string ReplyId { get; set; } = null!;
     [Timestamp]
-    public DateTime CreatedAt { get; set; }
+    public long? CreatedAt { get; set; } = DateTime.UtcNow.ToFileTime();
     public string VacancyId { get; set; } = null!;
 
     public long UserId { get; set; }

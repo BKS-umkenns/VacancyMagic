@@ -7,7 +7,7 @@
 
 <script>
 import VacancyCard from "../../../components/VacancyCard.vue";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "Swiper",
@@ -31,6 +31,16 @@ export default {
     this.element = document.getElementById(this.vacancies[this.current].id);
   },
   methods: {
+      ...mapMutations('Search',[
+          'removeVac'
+      ]),
+      replyMethod(id){
+          this.removeVac(id);
+          this.reply(id)
+      },
+      ...mapActions('Reply',[
+          'reply'
+      ]),
     onMouseDown (event) {
       let clientX;
       if (event instanceof TouchEvent) {
@@ -69,6 +79,9 @@ export default {
         const direction = this.offsetX > 0 ? 1 : -1;
         if (direction > 0) {
           // reply()
+            this.replyMethod(this.vacancies[this.current].id)
+        } else {
+            this.removeVac(this.vacancies[this.current].id);
         }
         this.dismiss(event, direction);
       }
@@ -114,7 +127,7 @@ export default {
 
       setTimeout(() => {
         this.current++;
-        if (this.current === this.vacancies.length) {
+        if (this.vacancies[this.current] === undefined) {
           return;
         }
 

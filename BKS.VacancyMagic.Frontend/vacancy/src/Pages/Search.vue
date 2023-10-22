@@ -25,19 +25,19 @@
             </div>
         </template>
         <template #step-content-0>
-            <AiPromtStep
-                ref="aiPromt"
+            <AiPromptStep
+                ref="aiPrompt"
             />
         </template>
+<!--        <template #step-content-1>-->
+<!--            <ConfirmFilters-->
+<!--            />-->
+<!--        </template>-->
         <template #step-content-1>
-            <ConfirmFilters
-            />
-        </template>
-        <template #step-content-2>
             <VacancyList
             />
         </template>
-        <template #step-content-3>
+        <template #step-content-2>
             NEVER BE HERE (we redirect to reply route instead)
         </template>
 
@@ -45,6 +45,7 @@
             <va-button
                     @click="handleNextButton(step,nextStep)"
                     :disabled="!isNextBtnAvailable(step)"
+                    :loading="isLoading"
             >
                 {{getNextButtonText(step)}}
             </va-button>
@@ -54,7 +55,7 @@
 
 <script>
 import NavBar from "../components/NavBar.vue";
-import AiPromtStep from "./SearchRelated/AiPromtStep.vue";
+import AiPromptStep from "./SearchRelated/AiPromptStep.vue";
 import ConfirmFilters from "./SearchRelated/ConfirmFilters.vue";
 import VacancyList from "./SearchRelated/VacancyList.vue";
 import {mapActions, mapGetters, mapMutations} from "vuex";
@@ -63,12 +64,12 @@ export default {
     components: {
         VacancyList,
         ConfirmFilters,
-        AiPromtStep,
+        AiPromptStep,
         NavBar
     },
     watch: {
         actualStep:function (newValue){
-            if(newValue === 3){
+            if(newValue === 2){
                 this.$router.push('/reply');
             }
         }
@@ -83,7 +84,7 @@ export default {
                     label: 'Запрос',
                     icon: 'list',
                 },
-                { label: 'Фильтры', icon: 'check_box' },
+                // { label: 'Фильтры', icon: 'check_box' },
                 { label: 'Вакансии', icon: 'payments' },
                 { label: 'Отклики', icon: 'done_all' },
             ]
@@ -91,8 +92,9 @@ export default {
     },
     computed: {
         ...mapGetters('Search',[
-            'isValidPromtText',
-            'searchState'
+            'isValidPromptText',
+            'searchState',
+            'isLoading'
         ]),
         actualStep: {
             get(){
@@ -110,11 +112,12 @@ export default {
             'changeState'
         ]),
         ...mapActions('Search',[
-            'newStart'
+            'newStart',
+            'loadVanaciesByPromt'
         ]),
         isNextBtnAvailable(step){
             if(step.icon === 'list') {
-                return this.isValidPromtText
+                return this.isValidPromptText;
             }
             return true;
         },
@@ -122,9 +125,10 @@ export default {
             if(step.icon === 'list') return 'Найти'
             return 'Дальше'
         },
-        handleNextButton(step,nextStepFunc){
+        async handleNextButton(step,nextStepFunc){
             if(step.icon === 'list') {
-                // console.log(this.$refs.aiPromt.validatePromt())
+                await this.loadVanaciesByPromt();
+                // console.log(this.$refs.aiPrompt.validatePrompt())
                 //call get specifications for search on external services (next step)
             }
             nextStepFunc();

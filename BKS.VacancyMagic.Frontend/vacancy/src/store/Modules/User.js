@@ -12,17 +12,21 @@ export default {
     }),
     mutations: {
         changeToken(state,newToken){
+            console.log('hello 1',newToken)
             if(newToken === null){
                 state.isAuth = false;
+            } else {
+                state.isAuth = true;
             }
             state.token = newToken;
             localStorage.setItem('user-token',state.token)
         },
         changeUserInfo(state,userData){
+            console.log('hello 2',userData)
             state.email = userData.email;
-            state.name = userData.name;
-            state.lastname = userData.lastname;
-            state.middlename = userData.middlename;
+            state.name = userData.firstName;
+            state.lastname = userData.lastName;
+            state.middlename = userData.middleName;
         }
     },
     actions: {
@@ -41,11 +45,12 @@ export default {
         },
         async getUserInfo({ dispatch, commit }){
             const res = await axios.get('/api/Auth/user');
-            if(res.data.success){
-                commit('changeUserInfo',res.data);
-            } else {
-                dispatch('logout');
-            }
+            commit('changeUserInfo',res.data);
+            // if(res.data.success){
+            //
+            // } else {
+            //     dispatch('logout');
+            // }
         },
         logout({ commit }){
             commit('changeToken',null);
@@ -63,9 +68,13 @@ export default {
         },
         async register({ commit,dispatch }, credentials){
             const res = await axios.post('/api/Auth/register',credentials);
+            await dispatch('login',{
+                login:credentials.email,
+                password:credentials.password
+            })
             if(res.data.success){
-                commit('changeToken',res.data.token);
-                dispatch('getUserInfo');
+                // commit('changeToken',res.data.token);
+                // dispatch('getUserInfo');
             } else {
                 // TO-DO: Handle bad response
             }

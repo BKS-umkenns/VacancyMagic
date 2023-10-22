@@ -1,12 +1,12 @@
 <template>
-  <div class="promt-tab">
+  <div class="prompt-tab">
     <div>
       Опишите вакансию своей мечты
     </div>
     <div>
       <va-textarea
         class="textarea"
-        ref="promt"
+        ref="prompt"
         v-model="inputted"
         :max-length="125"
         :max-rows="5"
@@ -22,6 +22,7 @@
 <script>
 
 import {mapGetters, mapMutations} from "vuex";
+import axios from "axios";
 
 export default {
   computed: {
@@ -30,11 +31,11 @@ export default {
     ]),
     inputted: {
       get(){
-        return this.searchState.actualPromt;
+        return this.searchState.actualPrompt;
       },
       set(newValue){
         this.changeState({
-          actualPromt: newValue
+          actualPrompt: newValue
         })
       }
     }
@@ -48,7 +49,7 @@ export default {
 </script>
 
 <style scoped>
-.promt-tab {
+.prompt-tab {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
