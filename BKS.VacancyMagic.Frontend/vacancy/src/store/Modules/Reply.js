@@ -66,7 +66,11 @@ export default {
         async reply({commit,dispatch},id){
             await dispatch('auth')
             const res = await axios.post('/api/Vacancy/reply', {
-                id
+
+            },{
+                params: {
+                    id
+                }
             })
             commit('/Search/removeVac',id);
         }
