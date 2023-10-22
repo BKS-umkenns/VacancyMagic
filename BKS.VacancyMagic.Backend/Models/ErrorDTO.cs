@@ -2,7 +2,13 @@
 
 public class ErrorDTO
 {
-    public int Code { get; set; }
-    public string? Error { get; set; }
-    public string? Message { get; set; }
+    public ErrorObject? error { get; set; }
+    public string? info { get; set; }
+}
+
+public class ErrorObject
+{
+    public int code { get; set; }
+    public string? error { get; set; }
+    public string? message { get; set; }
 }
