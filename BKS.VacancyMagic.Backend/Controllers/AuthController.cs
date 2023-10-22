@@ -52,7 +52,7 @@ public class AuthController : Controller
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login([FromBody] LoginDTO req, CancellationToken ct)
+    public async Task<ActionResult<LoginSuccessDTO?>> Login([FromBody] LoginDTO req, CancellationToken ct)
     {
         if (ModelState.IsValid)
         {
@@ -66,7 +66,7 @@ public class AuthController : Controller
                 if (user.PasswordHash != req.Password) return BadRequest("Login or password incorrect");
                 await Authenticate(user.Name);
 
-                return Ok(user.Name);
+                return Ok(new LoginSuccessDTO { Token = user.Name, Success = true });
             }
             catch (Exception ex)
             {
@@ -92,5 +92,19 @@ public class AuthController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Ok();
+    }
+
+    [HttpGet("user")]
+    public async Task<ActionResult<UserInfoDTO?>> userInfo(CancellationToken ct)
+    {
+        if (_contextAccessor.HttpContext!.User.Identity!.IsAuthenticated)
+        {
+            var user = await _dbContext.Users.SingleAsync(x => x.Name == _contextAccessor.HttpContext!.User.Identity!.Name, ct);
+            if (user == null) return BadRequest("User is not found");
+            var userInfo = _mapper.Map<UserInfoDTO>(user);
+            return Ok(userInfo);
+        }
+
+        return Unauthorized(new { Success = false });
     }
 }

@@ -5,6 +5,7 @@ public class ServiceAuthorization
     public long Id { get; set; }
     public string AccessToken { get; set; } = null!;
     public string? RefreshToken { get; set; }
+    public string? SecretKey { get; set; }
 
     public long UserId { get; set; }
     public long ServiceId { get; set; }

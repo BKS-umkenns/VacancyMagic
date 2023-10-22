@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using BKS.VacancyMagic.Backend.DAL.Models;
 using BKS.VacancyMagic.Backend.Models.Search;
+using BKS.VacancyMagic.Backend.Models.Vacancy;
 using BKS.VacancyMagic.Backend.Services;
 
 namespace BKS.VacancyMagic.Backend.Mapping;
@@ -24,5 +26,14 @@ public class VacancyProfie : Profile
             .ForMember(dest => dest.PaymentTo, src => src.MapFrom(x => x.payment_to))
             .ForMember(dest => dest.Period, src => src.MapFrom(x => x.period))
             .ForMember(dest => dest.Town, src => src.MapFrom(x => x.town));
+
+        CreateMap<VacancyRecordObject, SearchValue>()
+            .ForMember(dest => dest.VacancyId, src => src.MapFrom(x => x.id))
+            .ForMember(dest => dest.ServiceId, o => o.Ignore())
+            .ForMember(dest => dest.Id, o => o.Ignore())
+            .ForMember(dest => dest.ReplyId, o => o.Ignore())
+            .ForMember(dest => dest.UserId, o => o.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.id, src => src.MapFrom(x => x.VacancyId));
     }
 }
